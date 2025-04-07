@@ -19,4 +19,9 @@
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\ReportImages\Uploads\" />
+  </ItemGroup>
+
 </Project>
