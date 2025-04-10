@@ -1,3 +1,5 @@
+using FalandoSobre.Domain.Repositories;
+using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
@@ -23,6 +25,12 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddAntiforgery();
 
+builder.Services.AddTransient<IReportRepository, ReportRepository>();
+builder.Services.AddTransient<IReportRepository, ReportRepository>();
+builder.Services.AddTransient<IImageRepository, ImageRepository>();
+builder.Services.AddTransient<ICommentRepository, CommentRepository>();
+builder.Services.AddTransient<ILikeRepository, LikeRepository>();
+builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -42,7 +50,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-//builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSenderService>();
 
 
@@ -52,19 +59,6 @@ builder.Services.AddHttpClient("ApiClient", client =>
 });
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseWebAssemblyDebugging();
-//    app.UseMigrationsEndPoint();
-//}
-//else
-//{
-//    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-//    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//    app.UseHsts();
-//}
 
 app.UseHttpsRedirection();
 

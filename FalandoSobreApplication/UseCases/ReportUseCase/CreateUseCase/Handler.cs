@@ -33,7 +33,7 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, G
             command.TypeReport,
             command.ReportDescription,
             DateTime.UtcNow,
-            userName!,
+            userName,
             command.IsEvent
         );
 
