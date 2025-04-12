@@ -25,6 +25,12 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddAntiforgery();
 
+
+builder.Services.AddLogging(builder =>
+{
+    builder.AddConsole();
+});
+
 builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();

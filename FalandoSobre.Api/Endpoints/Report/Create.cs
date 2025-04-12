@@ -18,7 +18,7 @@ public sealed class CreateReportEndpoint : IEndpoint
                 request.ReportName,
                 request.TypeReport,
                 request.ReportDescription,
-                request.UserName,
+                //request.UserName,
                 request.IsEvent);
 
             Result<Guid> result = await sender.Send(command, cancellationToken);

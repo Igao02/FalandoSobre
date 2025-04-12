@@ -3,28 +3,36 @@ using FalandoSobre.Domain.Repositories;
 
 namespace FalandoSobre.Web.Handlers;
 
-public class ReportHandler(IHttpClientFactory httpClientFactory) : IReportRepository
+public class ReportHandler : IReportRepository
 {
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ReportHandler> _logger;
 
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("ApiClient");
+    public ReportHandler(IHttpClientFactory httpClientFactory, ILogger<ReportHandler> logger)
+    {
+        _httpClient = httpClientFactory.CreateClient("ApiClient");
+        _logger = logger;
+    }
 
     public async Task<Report> AddAsync(Report report)
     {
+        _logger.LogInformation("ReportHandler AddAsync report: {Report}", report);
         var response = await _httpClient.PostAsJsonAsync("/reports/create", report);
+        _logger.LogInformation("ReportHandler AddAsync response.StatusCode: {StatusCode}", response.StatusCode);
 
         if (response.IsSuccessStatusCode)
         {
             var createdReport = await response.Content.ReadFromJsonAsync<Report>();
+            _logger.LogInformation("ReportHandler AddAsync sucesso: {IsSuccess}", response.IsSuccessStatusCode);
             return createdReport!;
         }
         else
         {
-            // Você pode lançar uma exceção com detalhes do erro
             var error = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Erro ao criar o relatório: {Error}", error);
             throw new ApplicationException($"Erro ao criar o relatório: {error}");
         }
     }
-
 
     public Task DeleteAsync(Guid id)
     {

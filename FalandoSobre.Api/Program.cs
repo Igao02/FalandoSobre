@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins", policy =>
+    options.AddPolicy("ApiClient", policy =>
     {
         policy.WithOrigins("https://localhost:7188")
               .AllowAnyHeader()
@@ -39,6 +39,11 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 .AddDefaultTokenProviders()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+
+builder.Services.AddLogging(builder =>
+{
+    builder.AddConsole();
+});
 
 // Autenticação e Autorização
 builder.Services.AddAuthentication(options =>
