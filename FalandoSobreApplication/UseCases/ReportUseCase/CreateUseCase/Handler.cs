@@ -1,8 +1,8 @@
 ﻿using Application.Abstractions.Messaging;
-using Microsoft.AspNetCore.Http;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.SharedKernel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
@@ -22,29 +22,28 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, G
 
     public async Task<Result<Guid>> Handle(CreateReportCommand command, CancellationToken cancellationToken)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-        _logger.LogInformation("CreateReportHandler Handle user: {User}", user?.Identity?.Name);
-        
+        //var user = _httpContextAccessor.HttpContext?.User;
+        //_logger.LogInformation("User: {User}", user);
 
-        if (user is null || !user.Identity?.IsAuthenticated == true)
+        if (command.UserName == null)
         {
             throw new InvalidOperationException("Usuário não autenticado");
         }
 
-        var userName = user?.Identity?.Name;
-        _logger.LogInformation("CreateReportHandler Handle userName: {UserName}", userName);
-  
+        //var userName = user?.Identity?.Name;
 
         var report = new Report(
             command.ReportName,
             command.TypeReport,
             command.ReportDescription,
             DateTime.UtcNow,
-            userName,
+            command.UserName,
             command.IsEvent
         );
+        _logger.LogInformation("CRIANDO O RELATÓRIO: {Report}", report);
 
-        await _reportRepository.AddAsync(report);
+        var createdReport = await _reportRepository.AddAsync(report);
+        _logger.LogInformation("CRIADO O RELATÓRIO COM SUCESSO: {Report}", report);
 
         return Result.Success(report.Id);
     }

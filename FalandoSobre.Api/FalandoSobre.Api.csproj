@@ -12,9 +12,9 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
   </ItemGroup>
@@ -23,6 +23,7 @@
     <ProjectReference Include="..\FalandoSobre.Domain\FalandoSobre.Domain.csproj" />
     <ProjectReference Include="..\FalandoSobre.Infrastructure\FalandoSobre.Infrastructure.csproj" />
     <ProjectReference Include="..\FalandoSobre.SharedKernel\FalandoSobre.SharedKernel.csproj" />
+    <ProjectReference Include="..\FalandoSobre.Web\FalandoSobre.Web\FalandoSobre.Web.csproj" />
     <ProjectReference Include="..\FalandoSobreApplication\FalandoSobreApplication.csproj" />
   </ItemGroup>
 
