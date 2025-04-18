@@ -3,7 +3,6 @@ using FalandoSobre.Domain.Repositories;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 
 namespace FalandoSobre.Web.Components.Pages.CreateReport;
 
@@ -37,20 +36,10 @@ public class CreateReportPage : ComponentBase
 
         var user = authState.User;
 
-        if (user is null || !user.Identity?.IsAuthenticated == true)
-        {
-            throw new InvalidOperationException("Usuário não autenticado");
-        }
-
         try
         {
             Model.UserName = user.Identity?.Name;
-            Logger!.LogInformation("Model report name: {Model}", Model.ReportName);
-            Logger!.LogInformation("Model report description: {Model}", Model.ReportDescription);
-            Logger!.LogInformation("Model report type: {Model}", Model.TypeReport);
-            Logger!.LogInformation("Model report UserName: {Model}", Model.UserName);
-            var teste = await ReportRepository!.AddAsync(Model);
-            Logger!.LogInformation("TESTE CRIADO COM SUCESO: {teste.Id}", teste.Id);
+            var data = await ReportRepository!.AddAsync(Model);
             //await UploadImages();
             successMessage = "Publicação criada com sucesso!";
             imagePreviewUrls.Clear();
@@ -59,8 +48,8 @@ public class CreateReportPage : ComponentBase
         }
         catch (Exception ex)
         {
-            Logger!.LogInformation("teste.UserName: {UserName}");
-            errorMessage = $"Erro ao criar publicação: {ex.InnerException?.Message ?? ex.Message}";
+            Logger!.LogInformation($"Erro ao criar publicação: {ex.InnerException?.Message ?? ex.Message}");
+            errorMessage = $"{ex.InnerException?.Message ?? ex.Message}";
             //Navi!.NavigateTo("/create");
         }
         //finally

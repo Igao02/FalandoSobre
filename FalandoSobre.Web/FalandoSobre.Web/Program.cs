@@ -25,7 +25,7 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAntiforgery();
+//builder.Services.AddAntiforgery();
 
 
 builder.Services.AddLogging(builder =>
@@ -42,7 +42,6 @@ builder.Services.AddHttpClient("ApiClient", client =>
 });
 
 builder.Services.AddTransient<IReportRepository, ReportHandler>();
-//builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<ICommentRepository, CommentRepository>();
 builder.Services.AddTransient<ILikeRepository, LikeRepository>();
@@ -76,9 +75,9 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 
-app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

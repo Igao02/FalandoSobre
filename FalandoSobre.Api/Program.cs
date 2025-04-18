@@ -84,7 +84,7 @@ builder.Services.AddSwaggerGen();
 // Registro de Endpoints
 builder.Services.AddEndpoints(typeof(CreateReportEndpoint).Assembly);
 
-builder.Services.AddAntiforgery();
+//builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 
@@ -98,9 +98,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 // Mapeando a API
 app.MapIdentityApi<ApplicationUser>();

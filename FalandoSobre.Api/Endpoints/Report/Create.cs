@@ -29,7 +29,7 @@ public sealed class CreateReportEndpoint : IEndpoint
             Result<Guid> result = await sender.Send(command, cancellationToken);
             return result.Match(
                 value => Results.Ok(new { status = "success", reportId = value }),
-                CustomResults.Problem
+                CustomResults.SimpleError
             );
 
         })

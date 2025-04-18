@@ -70,4 +70,16 @@ public static class CustomResults
             };
         }
     }
+
+    public static IResult SimpleError(Result result)
+    {
+        if (result.IsSuccess)
+            throw new InvalidOperationException();
+
+        return Results.BadRequest(new
+        {
+            status = "error",
+            message = result.Error.Description
+        });
+    }
 }
