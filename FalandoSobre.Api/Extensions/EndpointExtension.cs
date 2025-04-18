@@ -15,6 +15,7 @@ public static class EndpointExtension
             .Select(type =>
             {
                 Console.WriteLine($"Registrando endpoint: {type.Name}");
+                Console.WriteLine($"Registrando endpoint atributos: {type.Attributes}");
                 return ServiceDescriptor.Transient(typeof(IEndpoint), type);
             })
             .ToArray();

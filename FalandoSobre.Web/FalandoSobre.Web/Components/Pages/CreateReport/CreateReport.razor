@@ -1,0 +1,107 @@
+﻿@page "/create-report"
+@rendermode InteractiveServer
+@inherits CreateReportPage
+
+<MudPopoverProvider />
+
+<PageTitle>Criar Publicação</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Criar Publicação</MudText>
+
+<div style="position: relative; min-height: 100vh;">
+    <MudImage Src="/Images/Fundo_OFC.png"
+              Style="position: fixed;
+                     top: 0; left: 0;
+                     width: 100%; height: 100%;
+                     background-position: center;
+                     background: no-repeat;
+                     background-size: cover;
+                     z-index: -1;" />
+
+    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="m-0" Style="min-height: 100vh;">
+        <MudItem xs="12" sm="10" md="8" lg="6">
+            <MudPaper Class="p-6 d-flex flex-column gap-4" Elevation="4" Style="background-color: rgba(255,255,255,0.95); border-radius: 16px;">
+
+                <!-- Avatar + Nome do Usuário -->
+                <div class="d-flex align-items-center gap-2">
+                    <MudAvatar Size="Size.Large">
+                        <MudImage Src="/Images/incognito.svg" />
+                    </MudAvatar>
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudNavLink Href="Account/Manage" Match="NavLinkMatch.All" Class="nav-link">
+                                <MudText Typo="Typo.subtitle1">
+                                    @context.User.Identity?.Name
+                                </MudText>
+                            </MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+
+                <!-- Mensagens -->
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <MudAlert Severity="Severity.Success">@successMessage</MudAlert>
+                }
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+                }
+
+                <!-- Formulário -->
+                <EditForm Model="@Model" OnValidSubmit="CreateReport">
+                    <DataAnnotationsValidator />
+
+                    <MudTextField Label="Nome da Publicação"
+                                  HelperText="Campo Obrigatório"
+                                  @bind-Value="Model.ReportName"
+                                  For="@(() => Model.ReportName)"
+                                  Required="true"
+                                  Margin="Margin.Normal"
+                                  FullWidth="true" />
+
+                    <MudSelect T="string"
+                               Label="Tipo da Publicação"
+                               @bind-Value="Model.TypeReport"
+                               Required="true"
+                               Margin="Margin.Normal"
+                               FullWidth="true">
+                        @foreach (var tipo in tipos)
+                        {
+                            <MudSelectItem Value="@tipo">@tipo</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudTextField Label="Descrição"
+                                  @bind-Value="Model.ReportDescription"
+                                  For="@(() => Model.ReportDescription)"
+                                  Required="true"
+                                  Margin="Margin.Normal"
+                                  Lines="4"
+                                  TextArea="true"
+                                  TextFieldStyle="TextFieldStyle.Outlined"
+                                  FullWidth="true" />
+
+                    <MudButton Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               Disabled="@uploadInProgress"
+                               ButtonType="ButtonType.Submit"
+                               Class="mt-3"
+                               FullWidth="true">
+                        Criar Publicação
+                    </MudButton>
+                </EditForm>
+
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+    private List<string> tipos = new()
+    {
+        "Racismo",
+        "Discriminação Feminina",
+        "Discriminação LGBT"
+    };
+}

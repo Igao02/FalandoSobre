@@ -1,44 +1,51 @@
 ﻿using Application.Abstractions.Messaging;
-using Microsoft.AspNetCore.Http;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.SharedKernel;
+using Microsoft.Extensions.Logging;
 
 namespace FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 
 public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, Guid>
 {
     private readonly IReportRepository _reportRepository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<CreateReportHandler> _logger;
 
-    public CreateReportHandler(IReportRepository reportRepository, IHttpContextAccessor httpContextAccessor)
+    public CreateReportHandler(IReportRepository reportRepository, ILogger<CreateReportHandler> logger)
     {
         _reportRepository = reportRepository;
-        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
 
     public async Task<Result<Guid>> Handle(CreateReportCommand command, CancellationToken cancellationToken)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (user is null || !user.Identity?.IsAuthenticated == true)
+        if (string.IsNullOrWhiteSpace(command.UserName))
         {
-            throw new InvalidOperationException("Usuário não autenticado");
+            var error = new Error("401", "Usuário não autenticado", ErrorType.Unauthorized);
+            _logger.LogInformation("Usuário não autenticado: {Error}", error);
+            return Result.Failure<Guid>(error);
         }
 
-        var userName = user?.Identity?.Name;
+        try
+        {
+            var report = new Report(
+                command.ReportName,
+                command.TypeReport,
+                command.ReportDescription,
+                DateTime.UtcNow,
+                command.UserName,
+                command.IsEvent
+            );
 
-        var report = new Report(
-            command.ReportName,
-            command.TypeReport,
-            command.ReportDescription,
-            DateTime.UtcNow,
-            userName!,
-            command.IsEvent
-        );
-
-        await _reportRepository.AddAsync(report);
-
-        return Result.Success(report.Id);
+            var createdReport = await _reportRepository.AddAsync(report);
+            _logger.LogInformation("CRIADO O RELATÓRIO COM SUCESSO: {Report}", report);
+            return Result.Success(report.Id);
+        }
+        catch
+        {
+            var error = new Error("500", "Erro ao criar o relatório", 0);
+            _logger.LogInformation("Erro ao criar o relatório: {Error}", error);
+            return Result.Failure<Guid>(error);
+        }
     }
 }

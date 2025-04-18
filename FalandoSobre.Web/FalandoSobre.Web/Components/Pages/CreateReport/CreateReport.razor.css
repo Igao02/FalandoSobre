@@ -1,0 +1,16 @@
+﻿body {
+    font-family: Arial, sans-serif;
+}
+
+::deep .full-page-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/wwwroot/Images/Fundo_OFC.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}

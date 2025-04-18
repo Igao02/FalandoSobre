@@ -15,14 +15,14 @@ public class Report : Entity
     public string ReportName { get; set; }
 
     [Required(ErrorMessage = "O tipo de publicação é obrigatório")]
-    public string TypeReport { get; set; }
+    public string TypeReport { get; set; } = string.Empty;
 
 
     [Required(ErrorMessage = "O conteúdo da publicação é obrigatória")]
     [StringLength(2000, ErrorMessage = "O conteúdo é no máximo de 2000 caracteres")]
     public string ReportDescription { get; set; }
 
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
     public bool? IsEvent { get; set; } = true;
     public DateTime ReportsDate { get; set; } = DateTime.Now;
 
@@ -32,7 +32,7 @@ public class Report : Entity
 
     public virtual List<Image> Images { get; set; } = new List<Image>();
 
-    public Report(string reportName, string typeReport, string reportDescription, DateTime reportDate, string userName, bool? isEvent) : base()
+    public Report(string reportName, string typeReport, string reportDescription, DateTime reportDate, string? userName, bool? isEvent) : base()
     {
         ReportName = reportName;
         TypeReport = typeReport;
