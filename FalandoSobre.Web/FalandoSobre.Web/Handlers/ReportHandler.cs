@@ -1,4 +1,5 @@
 ﻿using Azure;
+using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 
@@ -19,11 +20,26 @@ public class ReportHandler: IReportRepository
     {
         var response = await _httpClient.PostAsJsonAsync("/reports/create", report);
         var jsonResponse = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("JSON recebido da API: {Json} ", jsonResponse);
 
         if (response.IsSuccessStatusCode)
         {
-            _logger.LogInformation("response antes {respose}: ", response);
-            var createdReport = await response.Content.ReadFromJsonAsync<Report>();
+
+            var createdResponse = await response.Content.ReadFromJsonAsync<CreateReportResponse>();
+            _logger.LogInformation("response depois {response}: ", response);
+
+            var createdReport = new Report(
+                createdResponse.ReportName,
+                createdResponse.TypeReport,
+                createdResponse.ReportDescription,
+                createdResponse.ReportDate,
+                createdResponse.UserName,
+                createdResponse.IsEvent
+            )
+            {
+                Id = createdResponse.Id
+            };
+
             _logger.LogInformation("Relatório criado com sucesso: {Report}", createdReport);
             return createdReport;
         }

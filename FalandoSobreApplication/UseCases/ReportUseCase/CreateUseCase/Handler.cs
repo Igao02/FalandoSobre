@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 
-public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, Report>
+public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, CreateReportResponse>
 {
     private readonly IReportRepository _reportRepository;
     private readonly ILogger<CreateReportHandler> _logger;
@@ -18,13 +18,13 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, R
         _logger = logger;
     }
 
-    public async Task<Result<Report>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateReportResponse>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.UserName))
         {
             var error = new Error("401", "Usuário não autenticado", ErrorType.Unauthorized);
             _logger.LogInformation("Usuário não autenticado: {Error}", error);
-            return Result.Failure<Report>(error);
+            return Result.Failure<CreateReportResponse>(error);
         }
 
         _logger.LogInformation("Iniciando criação do relatório para o usuário {UserName}", request);
@@ -40,16 +40,28 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, R
                 request.IsEvent
             );
 
-            _logger.LogInformation("CRIADO O RELATÓRIO COM SUCESSO: {Report}", report.Id);
             var createdReport = await _reportRepository.AddAsync(report);
-            _logger.LogInformation("ID RETORNADO NESSA MERDA: {Report}", createdReport.Id);
-            return Result.Success(createdReport);
+            _logger.LogInformation("Relatório criado com ID: {ReportId}", createdReport.Id);
+
+            var response = new CreateReportResponse
+            {
+                Id = createdReport.Id,
+                ReportName = createdReport.ReportName,
+                TypeReport = createdReport.TypeReport,
+                ReportDescription = createdReport.ReportDescription,
+                ReportDate = createdReport.ReportsDate,
+                UserName = createdReport.UserName!,
+                IsEvent = createdReport.IsEvent ?? false
+            };
+
+            return Result.Success(response);
         }
         catch
         {
-            var error = new Error("500", "Erro ao criar o relatório", 0);
+            var error = new Error("500", "Erro ao criar o relatório", ErrorType.Failure);
             _logger.LogInformation("Erro ao criar o relatório: {Error}", error);
-            return Result.Failure<Report>(error);
+            return Result.Failure<CreateReportResponse>(error);
         }
     }
 }
+

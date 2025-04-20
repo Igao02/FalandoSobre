@@ -22,7 +22,7 @@ public sealed class CreateImageEndpoint : IEndpoint
 
             Result<Guid> result = await sender.Send(command, cancellationToken);
             return result.Match(
-                value => Results.Ok(new { status = "success", imageId = value }),
+                value => Results.Ok(value),
                 CustomResults.SimpleError
             );
         })

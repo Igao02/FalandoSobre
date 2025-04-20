@@ -1,6 +1,12 @@
 ﻿namespace FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 
-public sealed record Response(Guid Id)
+public sealed class CreateReportResponse
 {
-    public bool IsSuccess { get; set; }
+    public Guid Id { get; init; }
+    public string ReportName { get; init; } = default!;
+    public string TypeReport { get; init; } = default!;
+    public string ReportDescription { get; init; } = default!;
+    public DateTime ReportDate { get; init; }
+    public string UserName { get; init; } = default!;
+    public bool IsEvent { get; init; } = default!;
 }

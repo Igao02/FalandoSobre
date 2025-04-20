@@ -22,9 +22,9 @@ public sealed class CreateReportEndpoint : IEndpoint
                 request.UserName,
                 request.IsEvent);
 
-            Result<Report> result = await sender.Send(command, cancellationToken);
+            Result<CreateReportResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(
-                value => Results.Ok(new { status = "success", reportId = value }),
+                value => Results.Ok(value),
                 CustomResults.SimpleError
             );
 
