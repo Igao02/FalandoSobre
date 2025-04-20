@@ -18,12 +18,14 @@ public class ReportHandler: IReportRepository
     public async Task<Report> AddAsync(Report report)
     {
         var response = await _httpClient.PostAsJsonAsync("/reports/create", report);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
 
         if (response.IsSuccessStatusCode)
         {
+            _logger.LogInformation("response antes {respose}: ", response);
             var createdReport = await response.Content.ReadFromJsonAsync<Report>();
             _logger.LogInformation("Relatório criado com sucesso: {Report}", createdReport);
-            return createdReport!;
+            return createdReport;
         }
         else
         {

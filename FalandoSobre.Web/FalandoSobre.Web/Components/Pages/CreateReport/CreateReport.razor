@@ -6,9 +6,7 @@
 
 <PageTitle>Criar Publicação</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Criar Publicação</MudText>
-
-<div style="position: relative; min-height: 100vh;">
+<div style="position: relative; min-height: 100vh; align-content: center">
     <MudImage Src="/Images/Fundo_OFC.png"
               Style="position: fixed;
                      top: 0; left: 0;
@@ -20,17 +18,23 @@
 
     <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Class="m-0" Style="min-height: 100vh;">
         <MudItem xs="12" sm="10" md="8" lg="6">
-            <MudPaper Class="p-6 d-flex flex-column gap-4" Elevation="4" Style="background-color: rgba(255,255,255,0.95); border-radius: 16px;">
+            <MudPaper Class="px-4 py-6 d-flex flex-column" Elevation="10" Style="background-color: rgba(255,255,255,0.98); border-radius: 16px; width: 100%; max-width: 700px; margin: auto;">
+
+                <!-- Cabeçalho -->
+                <div class="text-center mb-4">
+                    <MudText Typo="Typo.h4" Color="Color.Primary" GutterBottom="true">Criar Nova Publicação</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">Preencha os campos abaixo para criar sua publicação</MudText>
+                </div>
 
                 <!-- Avatar + Nome do Usuário -->
-                <div class="d-flex align-items-center gap-2">
-                    <MudAvatar Size="Size.Large">
+                <div class="d-flex align-items-center mb-4 px-3">
+                    <MudAvatar Size="Size.Medium" Style="width: 48px; height: 48px;">
                         <MudImage Src="/Images/incognito.svg" />
                     </MudAvatar>
                     <AuthorizeView>
                         <Authorized>
-                            <MudNavLink Href="Account/Manage" Match="NavLinkMatch.All" Class="nav-link">
-                                <MudText Typo="Typo.subtitle1">
+                            <MudNavLink Href="Account/Manage" Match="NavLinkMatch.All" Class="nav-link ml-3">
+                                <MudText Typo="Typo.subtitle1" Style="font-weight: 500;">
                                     @context.User.Identity?.Name
                                 </MudText>
                             </MudNavLink>
@@ -39,33 +43,42 @@
                 </div>
 
                 <!-- Mensagens -->
-                @if (!string.IsNullOrEmpty(successMessage))
-                {
-                    <MudAlert Severity="Severity.Success">@successMessage</MudAlert>
-                }
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
-                }
+                <div class="mb-4" style="max-width: 100%;">
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <MudAlert Severity="Severity.Success" Class="mb-3" Elevation="2">@successMessage</MudAlert>
+                    }
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mb-3" Elevation="2">@errorMessage</MudAlert>
+                    }
+                </div>
 
                 <!-- Formulário -->
-                <EditForm Model="@Model" OnValidSubmit="CreateReport">
+                <EditForm Model="@Model" OnValidSubmit="CreateReport" style="padding: 0 16px;">
                     <DataAnnotationsValidator />
 
                     <MudTextField Label="Nome da Publicação"
-                                  HelperText="Campo Obrigatório"
+                                  HelperText="Máximo de 100 caracteres"
                                   @bind-Value="Model.ReportName"
                                   For="@(() => Model.ReportName)"
                                   Required="true"
-                                  Margin="Margin.Normal"
-                                  FullWidth="true" />
+                                  Margin="Margin.Dense"
+                                  Variant="Variant.Outlined"
+                                  Class="mb-4 rounded-lg"
+                                  Style="max-width: 100%;"
+                                  CharCounter="true"
+                                  MaxLength="100" />
 
                     <MudSelect T="string"
                                Label="Tipo da Publicação"
                                @bind-Value="Model.TypeReport"
                                Required="true"
-                               Margin="Margin.Normal"
-                               FullWidth="true">
+                               Margin="Margin.Dense"
+                               Variant="Variant.Outlined"
+                               Class="mb-4 rounded-lg"
+                               Style="max-width: 100%;"
+                               HelperText="Selecione o tipo de publicação">
                         @foreach (var tipo in tipos)
                         {
                             <MudSelectItem Value="@tipo">@tipo</MudSelectItem>
@@ -76,20 +89,72 @@
                                   @bind-Value="Model.ReportDescription"
                                   For="@(() => Model.ReportDescription)"
                                   Required="true"
-                                  Margin="Margin.Normal"
+                                  Margin="Margin.Dense"
                                   Lines="4"
                                   TextArea="true"
-                                  TextFieldStyle="TextFieldStyle.Outlined"
-                                  FullWidth="true" />
+                                  Variant="Variant.Outlined"
+                                  Class="mb-4 rounded-lg"
+                                  Style="max-width: 100%;"
+                                  HelperText="Descreva com detalhes a situação"
+                                  CharCounter="true"
+                                  MaxLength="500" />
 
-                    <MudButton Color="Color.Primary"
-                               Variant="Variant.Filled"
-                               Disabled="@uploadInProgress"
-                               ButtonType="ButtonType.Submit"
-                               Class="mt-3"
-                               FullWidth="true">
-                        Criar Publicação
-                    </MudButton>
+                    <!-- Seção de Upload de Imagens -->
+                    <div class="mb-4">
+                        <MudText Typo="Typo.subtitle1" Class="mb-2" Color="Color.Primary">Upload de Imagens</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-3" Color="Color.Secondary">Selecione imagens (Máx. 10MB cada)</MudText>
+
+                        <!-- Área de Upload Estilizada -->
+                        <MudPaper Elevation="1" Class="pa-4" Style="border: 2px dashed var(--mud-palette-primary); border-radius: 8px; background-color: rgba(var(--mud-palette-primary-rgb), 0.05);">
+                            <InputFile id="imageUpload" class="d-none" multiple accept="image/*" OnChange="HandleSelectedFiles" />
+                            <label for="imageUpload" class="d-flex flex-column align-items-center" style="cursor: pointer;">
+                                <MudIcon Icon="@Icons.Material.Filled.Image" Size="Size.Large" Class="mb-2" Color="Color.Primary" />
+                                <MudText Typo="Typo.body1" Class="mb-2">Clique para adicionar imagens</MudText>
+                            </label>
+                        </MudPaper>
+                    </div>
+
+                    <!-- Preview de Imagens -->
+                    @if (imagePreviewUrls?.Any() == true)
+                    {
+                        <div class="mb-4">
+                            <MudText Typo="Typo.subtitle1" Class="mb-3" Color="Color.Primary">Pré-visualização</MudText>
+
+                            <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                                @foreach (var imageUrl in imagePreviewUrls)
+                                {
+                                    <MudItem xs="6" sm="4" md="3">
+                                        <div style="height: 120px; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <img src="@imageUrl"
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
+                                                 class="hover-zoom" />
+                                        </div>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </div>
+                    }
+
+
+                    <div class="text-center mt-4">
+                        <MudButton Color="Color.Primary"
+                                   Variant="Variant.Filled"
+                                   Disabled="@uploadInProgress"
+                                   ButtonType="ButtonType.Submit"
+                                   EndIcon="@Icons.Material.Filled.Send"
+                                   Class="rounded-lg px-6 py-3"
+                                   Style="min-width: 200px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                            @if (uploadInProgress)
+                            {
+                                <MudProgressCircular Size="Size.Small" Color="Color.Inherit" Class="mr-2" />
+                                <span>Enviando...</span>
+                            }
+                            else
+                            {
+                                <span>Criar Publicação</span>
+                            }
+                        </MudButton>
+                    </div>
                 </EditForm>
 
             </MudPaper>

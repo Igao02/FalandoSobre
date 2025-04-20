@@ -2,11 +2,12 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.SharedKernel;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 
-public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, Guid>
+public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, Report>
 {
     private readonly IReportRepository _reportRepository;
     private readonly ILogger<CreateReportHandler> _logger;
@@ -17,35 +18,38 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, G
         _logger = logger;
     }
 
-    public async Task<Result<Guid>> Handle(CreateReportCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Report>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(command.UserName))
+        if (string.IsNullOrWhiteSpace(request.UserName))
         {
             var error = new Error("401", "Usuário não autenticado", ErrorType.Unauthorized);
             _logger.LogInformation("Usuário não autenticado: {Error}", error);
-            return Result.Failure<Guid>(error);
+            return Result.Failure<Report>(error);
         }
+
+        _logger.LogInformation("Iniciando criação do relatório para o usuário {UserName}", request);
 
         try
         {
             var report = new Report(
-                command.ReportName,
-                command.TypeReport,
-                command.ReportDescription,
+                request.ReportName,
+                request.TypeReport,
+                request.ReportDescription,
                 DateTime.UtcNow,
-                command.UserName,
-                command.IsEvent
+                request.UserName,
+                request.IsEvent
             );
 
+            _logger.LogInformation("CRIADO O RELATÓRIO COM SUCESSO: {Report}", report.Id);
             var createdReport = await _reportRepository.AddAsync(report);
-            _logger.LogInformation("CRIADO O RELATÓRIO COM SUCESSO: {Report}", report);
-            return Result.Success(report.Id);
+            _logger.LogInformation("ID RETORNADO NESSA MERDA: {Report}", createdReport.Id);
+            return Result.Success(createdReport);
         }
         catch
         {
             var error = new Error("500", "Erro ao criar o relatório", 0);
             _logger.LogInformation("Erro ao criar o relatório: {Error}", error);
-            return Result.Failure<Guid>(error);
+            return Result.Failure<Report>(error);
         }
     }
 }
