@@ -5,6 +5,7 @@ using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Data;
 using FalandoSobre.Web.Handlers;
+using FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -68,9 +69,9 @@ builder.Services.AddAuthorization();
 // Serviços da Aplicação
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateReportCommand).Assembly));
 
-//builder.Services.AddTransient<IReportRepository, ReportHandler>();
 builder.Services.AddTransient<IReportRepository, ReportRepository>();
-//builder.Services.AddTransient<IImageRepository, ImageRepository>();
+builder.Services.AddTransient<IImageRepository, ImageRepository>();
+
 //builder.Services.AddTransient<ICommentRepository, CommentRepository>();
 //builder.Services.AddTransient<ILikeRepository, LikeRepository>();
 //builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
@@ -97,6 +98,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseWebAssemblyDebugging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

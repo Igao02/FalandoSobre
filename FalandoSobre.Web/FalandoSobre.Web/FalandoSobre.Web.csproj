@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FalandoSobre.Infrastructure\FalandoSobre.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\FalandoSobreApplication\FalandoSobreApplication.csproj" />
     <ProjectReference Include="..\FalandoSobre.Web.Client\FalandoSobre.Web.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.*" />
