@@ -20,7 +20,7 @@ public sealed class CreateImageEndpoint : IEndpoint
                 request.CreatedAt,
                 request.ReportId);
 
-            Result<Guid> result = await sender.Send(command, cancellationToken);
+            Result<CreateImageResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(
                 value => Results.Ok(value),
                 CustomResults.SimpleError

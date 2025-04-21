@@ -44,12 +44,9 @@ public class CreateReportPage : ComponentBase
         try
         {
             Model.UserName = user.Identity?.Name;
-            Model.Id = Guid.Empty;
-            Logger.LogInformation($"Existe um id antes de criar?  { Model.Id}");
+            //Model.Id = Guid.Empty;
             var data = await ReportRepository!.AddAsync(Model);
-            Model.Id = data.Id;
-            Logger.LogInformation($"Publicação criada com sucesso: {data.Id}");
-            Logger.LogInformation($"ID da publicação criada aqui no create report: {Model.Id}");
+            Model.Id = data.Id;;
             successMessage = "Publicação criada com sucesso!";
             await UploadImages();
             imagePreviewUrls.Clear();
@@ -149,14 +146,11 @@ public class CreateReportPage : ComponentBase
                 var fileBytes = memoryStream.ToArray();
 
                 var fileExtension = Path.GetExtension(file.Name);
-                var fileName = $"{fileExtension}";
-                var imageUrl = $"/ReportImages/Uploads/{fileName}";
-                Logger.LogInformation($"Adicionando imagem: {file.Name}, URL: {imageUrl}");
-                Logger.LogInformation($"ID da publicação criada: {Model.Id}");
-
+                var fileName = $"{file.Name}";
+                //var imageUrl = $"/ReportImages/Uploads/{fileName}";
 
                 var novaImagem = new Image(
-                    imageUrl: imageUrl,
+                    imageUrl: fileName,
                     conteudoArquivo: fileBytes,
                     imageDate: DateTime.Now,
                     reportId: Model.Id 

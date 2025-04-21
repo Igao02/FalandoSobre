@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
 
-public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Guid>
+public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, CreateImageResponse>
 {
     private readonly IImageRepository _imageRepository;
     private readonly ILogger<CreateImageHandler> _logger;
@@ -17,45 +17,52 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Gui
         _logger = logger;
     }
 
-    public async Task<Result<Guid>> Handle(CreateImageCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateImageResponse>> Handle(CreateImageCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Iniciando criação da imagem para o relatório {ReportId}", request.ReportId);
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ReportImages", "Uploads"); ;
 
-            var fileName = $"png"; // ou .jpg, etc, dependendo do tipo da imagem
-            _logger.LogInformation($"File name aqui? {fileName}");
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ReportImages", "Uploads");
-            Directory.CreateDirectory(uploadFolder); // garante que a pasta exista
-            var filePath = Path.Combine(uploadFolder, fileName);
-            _logger.LogInformation("Imagem salva no disco: {FilePath}", filePath);
+
+            _logger.LogInformation("Criando diretório para upload: {UploadFolder}", uploadFolder);
+            Directory.CreateDirectory(uploadFolder);
+
+
+            var filePath = Path.Combine(uploadFolder, request.ImageUrl);
 
             await File.WriteAllBytesAsync(filePath, request.ConteudoArquivo, cancellationToken);
 
-            var imageUrl = $"/ReportImages/Uploads/{fileName}"; // isso sim vai no banco!
-            _logger.LogInformation("URL da imagem: {ImageUrl}", imageUrl);
-
-            _logger.LogInformation("ReportId antes de entrar aqui para criar novo{request.ReportId}", request.ReportId);
+            //var imageUrl = $"/ReportImages/Uploads/{request.ImageUrl}"; 
 
             var image = new Image(
-                imageUrl: imageUrl,
-                conteudoArquivo: null, // se quiser, pode salvar só no disco e deixar null no banco
-                imageDate: request.CreatedAt,
+                imageUrl: filePath,
+                conteudoArquivo: null,
+                imageDate: DateTime.Now,
                 reportId: request.ReportId
             );
-            _logger.LogInformation("Criando imagem com URL {image}", image);
+            _logger.LogInformation("Criando imagem {image}", image);
 
             var result = await _imageRepository.AddImageAsync(image);
 
-            _logger.LogInformation("Imagem criada com sucesso. ID: {ImageId}", result.Id);
+            _logger.LogInformation("Imagem criada com sucesso. ID: {ImageId}", result);
 
-            return Result.Success(result.Id);
+            var response = new CreateImageResponse
+            {
+                Id = result.Id,
+                ImageUrl = result.ImageUrl,
+                ConteudoArquivo = null,
+                ImageDate = result.ImageDate,
+                ReportId = result.ReportId
+            };
+            _logger.LogInformation("Resposta da criação da imagem: {Response}", response);
+
+            return Result.Success(response);
         }
         catch (Exception ex)
         {
             var error = new Error("500", "Erro ao criar a imagem", 0);
             _logger.LogError(ex, "Erro ao criar a imagem: {Error}", error);
-            return Result.Failure<Guid>(error);
+            return Result.Failure<CreateImageResponse>(error);
         }
     }
 }

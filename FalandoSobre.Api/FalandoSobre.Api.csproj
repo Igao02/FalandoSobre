@@ -27,4 +27,8 @@
     <ProjectReference Include="..\FalandoSobreApplication\FalandoSobreApplication.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\ReportImages\Uploads\" />
+  </ItemGroup>
+
 </Project>

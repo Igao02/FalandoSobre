@@ -13,7 +13,7 @@ public class Image : Entity
 
     public byte[]? ConteudoArquivo { get; set; }
 
-    public DateTime ImageDate { get; set; }
+    public DateTime ImageDate { get; set; } = DateTime.Now;
 
     public virtual Guid ReportId { get; set; }
 

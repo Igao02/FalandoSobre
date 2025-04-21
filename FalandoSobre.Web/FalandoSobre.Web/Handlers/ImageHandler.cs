@@ -1,5 +1,6 @@
 ﻿using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
+using FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
 
 namespace FalandoSobre.Web.Handlers;
 
@@ -14,14 +15,25 @@ public class ImageHandler : IImageRepository
         _logger = logger;
     }
 
-    public Task<Image> AddImageAsync(Image image)
+    public async Task<Image> AddImageAsync(Image image)
     {
         var response = _httpClient.PostAsJsonAsync("/images/create", image);
 
         if (response.Result.IsSuccessStatusCode)
         {
-            var createdImage = response.Result.Content.ReadFromJsonAsync<Image>();
-            _logger.LogInformation("Imagem criada com sucesso: {Image}", createdImage);
+            var createdResponse = await response.Result.Content.ReadFromJsonAsync<CreateImageResponse>();
+            _logger.LogInformation("Imagem criada com sucesso: {createdResponse}", createdResponse);
+
+            var createdImage = new Image(
+                imageUrl: createdResponse!.ImageUrl,
+                conteudoArquivo: null,
+                imageDate: createdResponse.ImageDate,
+                reportId: createdResponse.ReportId
+            )
+            {
+                Id = createdResponse.Id
+            };
+
             return createdImage!;
         }
         else

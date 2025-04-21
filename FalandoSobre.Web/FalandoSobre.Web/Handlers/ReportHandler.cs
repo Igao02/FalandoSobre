@@ -29,7 +29,7 @@ public class ReportHandler: IReportRepository
             _logger.LogInformation("response depois {response}: ", response);
 
             var createdReport = new Report(
-                createdResponse.ReportName,
+                createdResponse!.ReportName,
                 createdResponse.TypeReport,
                 createdResponse.ReportDescription,
                 createdResponse.ReportDate,
