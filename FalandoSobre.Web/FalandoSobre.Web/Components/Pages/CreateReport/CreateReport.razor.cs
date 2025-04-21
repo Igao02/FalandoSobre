@@ -56,15 +56,18 @@ public class CreateReportPage : ComponentBase
         catch (Exception ex)
         {
             Logger!.LogInformation($"Erro ao criar publicação: {ex.InnerException?.Message ?? ex.Message}");
+            uploadInProgress = false;
             errorMessage = $"{ex.InnerException?.Message ?? ex.Message}";
             //Navi!.NavigateTo("/create");
         }
-        //finally
-        //{
-        //    uploadInProgress = false;
-        //    selectedFiles.Clear();
-        //    StateHasChanged();
-        //}
+        finally
+        {
+            uploadInProgress = false;
+            selectedFiles.Clear();
+            Model = new();
+            ImageModel = new();
+            StateHasChanged();
+        }
 
     }
 
@@ -147,7 +150,6 @@ public class CreateReportPage : ComponentBase
 
                 var fileExtension = Path.GetExtension(file.Name);
                 var fileName = $"{file.Name}";
-                //var imageUrl = $"/ReportImages/Uploads/{fileName}";
 
                 var novaImagem = new Image(
                     imageUrl: fileName,
