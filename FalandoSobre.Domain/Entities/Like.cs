@@ -17,6 +17,8 @@ public class Like : Entity
 
     public virtual Report Report { get; set; }
 
+    public bool Actived { get; set; } = true;
+
     public Like(DateTime? likeDate, string userName, Guid reportId) : base()
     {
         LikeDate = likeDate;

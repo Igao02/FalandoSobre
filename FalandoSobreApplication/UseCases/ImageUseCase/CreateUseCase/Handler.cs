@@ -21,18 +21,35 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
     {
         try
         {
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ReportImages", "Uploads"); ;
+            if (request == null)
+            {
+                var error = new Error("400", "Requisição inválida", 0);
+                _logger.LogWarning("Requisição nula recebida.");
+                return Result.Failure<CreateImageResponse>(error);
+            }
 
+            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            {
+                var error = new Error("400", "O nome do arquivo da imagem não pode ser vazio", 0);
+                _logger.LogWarning("Nome do arquivo de imagem ausente.");
+                return Result.Failure<CreateImageResponse>(error);
+            }
+
+            if (request.ReportId == Guid.Empty)
+            {
+                var error = new Error("400", "O ID da publicação é inválido", 0);
+                _logger.LogWarning("ID da publicação inválido: {ReportId}", request.ReportId);
+                return Result.Failure<CreateImageResponse>(error);
+            }
+
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ReportImages", "Uploads");
 
             _logger.LogInformation("Criando diretório para upload: {UploadFolder}", uploadFolder);
             Directory.CreateDirectory(uploadFolder);
 
-
             var filePath = Path.Combine(uploadFolder, request.ImageUrl);
 
             await File.WriteAllBytesAsync(filePath, request.ConteudoArquivo, cancellationToken);
-
-            //var imageUrl = $"/ReportImages/Uploads/{request.ImageUrl}"; 
 
             var image = new Image(
                 imageUrl: filePath,
@@ -44,7 +61,7 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
 
             var result = await _imageRepository.AddImageAsync(image);
 
-            _logger.LogInformation("Imagem criada com sucesso. ID: {ImageId}", result);
+            _logger.LogInformation("Imagem criada com sucesso. ID: {ImageId}", result.Id);
 
             var response = new CreateImageResponse
             {
@@ -65,4 +82,5 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
             return Result.Failure<CreateImageResponse>(error);
         }
     }
+
 }

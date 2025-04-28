@@ -47,6 +47,8 @@ public class Institution : Entity
 
     public string UserName { get; set; }
 
+    public bool Actived { get; set; } = true;
+
     public Institution(string corporateName, string document, string cep, string street, int numHome, string? complement, DateTime? creationDate, string userName, string neighborhood, string uf) : base()
     {
         CorporateName = corporateName;

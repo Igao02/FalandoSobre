@@ -10,7 +10,11 @@ public class LikeConfiguration : IEntityTypeConfiguration<Like>
     {
         builder.HasKey(l => l.Id);
 
-        builder.Property(l => l.LikeDate)
+        builder
+            .Property(l => l.LikeDate)
+            .IsRequired();
+
+        builder.Property(l => l.Actived)
             .IsRequired();
     }
 }

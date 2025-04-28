@@ -7,5 +7,7 @@ public sealed record CreateReportCommand(
     string TypeReport,
     string ReportDescription,
     string UserName,
-    bool IsEvent
+    bool IsEvent,
+    bool Actived,
+    string ApplicationUserId
 ) : ICommand<CreateReportResponse>;

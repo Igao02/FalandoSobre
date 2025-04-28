@@ -54,7 +54,12 @@ public class InstitutionConfiguration : IEntityTypeConfiguration<Institution>
             .HasMaxLength(5)
             .IsRequired();
 
-        builder.Property(i => i.Complement)
+        builder
+            .Property(i => i.Complement)
             .HasMaxLength(150);
+
+        builder
+            .Property(i => i.Actived)
+            .IsRequired();
     }
 }
