@@ -15,9 +15,11 @@ public class Image : Entity
 
     public DateTime ImageDate { get; set; } = DateTime.Now;
 
+    public bool Actived { get; set; } = true;
+
     public virtual Guid ReportId { get; set; }
 
-    public virtual Report? Report { get; set; }
+    public virtual Report Report { get; set; }
 
     public Image(string imageUrl, byte[]? conteudoArquivo, DateTime imageDate, Guid reportId) : base()
     {

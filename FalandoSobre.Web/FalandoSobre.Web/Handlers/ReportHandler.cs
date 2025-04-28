@@ -34,7 +34,9 @@ public class ReportHandler: IReportRepository
                 createdResponse.ReportDescription,
                 createdResponse.ReportDate,
                 createdResponse.UserName,
-                createdResponse.IsEvent
+                createdResponse.IsEvent,
+                createdResponse.Actived,
+                createdResponse.ApplicationUserId
             )
             {
                 Id = createdResponse.Id

@@ -37,7 +37,9 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
                 request.ReportDescription,
                 DateTime.UtcNow,
                 request.UserName,
-                request.IsEvent
+                request.IsEvent,
+                request.Actived,
+                request.ApplicationUserId
             );
 
             var createdReport = await _reportRepository.AddAsync(report);
@@ -51,7 +53,9 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
                 ReportDescription = createdReport.ReportDescription,
                 ReportDate = createdReport.ReportsDate,
                 UserName = createdReport.UserName!,
-                IsEvent = createdReport.IsEvent ?? false
+                IsEvent = createdReport.IsEvent ?? false,
+                Actived = createdReport.Actived,
+                ApplicationUserId = createdReport.ApplicationUserId
             };
 
             return Result.Success(response);

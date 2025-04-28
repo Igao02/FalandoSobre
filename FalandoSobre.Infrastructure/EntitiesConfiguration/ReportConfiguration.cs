@@ -48,6 +48,14 @@ namespace FalandoSobre.Infrastructure.EntitiesConfiguration
                 .HasMany(_ => _.Comments)
                 .WithOne(_ => _.Report)
                 .HasForeignKey(_ => _.ReportId);
+
+            builder
+                .Property(_ => _.Actived)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.ApplicationUserId)
+                .IsRequired();
         }
     }
 }

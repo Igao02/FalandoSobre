@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace FalandoSobre.Web.Components.Pages.CreateReport;
 
@@ -38,27 +39,29 @@ public class CreateReportPage : ComponentBase
         errorMessage = string.Empty;
 
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
         var user = authState.User;
 
         try
         {
+            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(userIdString == string.Empty || userIdString == null)
+            {
+                errorMessage = "Usuário não encontrado.";
+            }
+
             Model.UserName = user.Identity?.Name;
-            //Model.Id = Guid.Empty;
+            Model.ApplicationUserId = userIdString!;
             var data = await ReportRepository!.AddAsync(Model);
-            Model.Id = data.Id;;
+            Model.Id = data.Id;
             successMessage = "Publicação criada com sucesso!";
             await UploadImages();
             imagePreviewUrls.Clear();
-            //Navi!.NavigateTo("/");
-
         }
         catch (Exception ex)
         {
             Logger!.LogInformation($"Erro ao criar publicação: {ex.InnerException?.Message ?? ex.Message}");
             uploadInProgress = false;
             errorMessage = $"{ex.InnerException?.Message ?? ex.Message}";
-            //Navi!.NavigateTo("/create");
         }
         finally
         {
@@ -68,7 +71,6 @@ public class CreateReportPage : ComponentBase
             ImageModel = new();
             StateHasChanged();
         }
-
     }
 
     protected async Task HandleSelectedFiles(InputFileChangeEventArgs e)

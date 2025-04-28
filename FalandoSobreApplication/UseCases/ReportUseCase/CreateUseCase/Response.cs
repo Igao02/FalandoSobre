@@ -9,4 +9,6 @@ public sealed class CreateReportResponse
     public DateTime ReportDate { get; init; }
     public string UserName { get; init; } = default!;
     public bool IsEvent { get; init; } = default!;
+    public string ApplicationUserId { get; init; } = default!;
+    public bool Actived { get; init; } = default!;
 }

@@ -10,11 +10,21 @@ namespace FalandoSobre.Infrastructure.EntitiesConfiguration
         {
             builder.HasKey(i => i.Id);
 
-            builder.Property(i => i.ImageUrl)
+            builder
+                .Property(i => i.ImageUrl)
                 .HasMaxLength(350)
                 .IsRequired();
 
-            builder.Property(i => i.ImageDate)
+            builder
+                .Property(i => i.ImageDate)
+                .IsRequired();
+
+            builder
+                .Property(i => i.Actived)
+                .IsRequired();
+
+            builder
+                .Property(i => i.ReportId)
                 .IsRequired();
         }
     }

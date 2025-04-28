@@ -9,7 +9,7 @@ namespace FalandoSobre.Api.Endpoints.Reports;
 
 public sealed class CreateReportEndpoint : IEndpoint
 {
-    public sealed record Request(string ReportName, string TypeReport, string ReportDescription, string UserName, bool IsEvent);
+    public sealed record Request(string ReportName, string TypeReport, string ReportDescription, string UserName, bool IsEvent, bool Actived, string ApplicationUserId);
 
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
@@ -20,9 +20,11 @@ public sealed class CreateReportEndpoint : IEndpoint
                 request.TypeReport,
                 request.ReportDescription,
                 request.UserName,
-                request.IsEvent);
+                request.IsEvent,
+                request.Actived,
+                request.ApplicationUserId);
 
-            Result<CreateReportResponse> result = await sender.Send(command, cancellationToken);
+            Result <CreateReportResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(
                 value => Results.Ok(value),
                 CustomResults.SimpleError

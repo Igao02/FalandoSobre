@@ -10,12 +10,18 @@ namespace FalandoSobre.Infrastructure.EntitiesConfiguration
         {
             builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.CommentContent)
+            builder
+                .Property(c => c.CommentContent)
                 .IsRequired()
                 .HasMaxLength(1000);
                 
 
-            builder.Property(c => c.CommentDate)
+            builder
+                .Property(c => c.CommentDate)
+                .IsRequired();
+
+            builder
+                .Property(c => c.Actived)
                 .IsRequired();
         }
     }

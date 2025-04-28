@@ -1,6 +1,7 @@
 ﻿using FalandoSobre.DomainCore.Entities;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace FalandoSobre.Domain.Entities;
 
 public class Comment : Entity
@@ -14,6 +15,8 @@ public class Comment : Entity
     public string CommentContent { get; set; }
 
     public DateTime CommentDate { get; set; } = DateTime.Now;
+
+    public bool Actived { get; set; } = true;
 
     public string UserName { get; set; }
 

@@ -4,6 +4,7 @@ using FalandoSobre.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FalandoSobre.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250427171118_AddActivedField")]
+    partial class AddActivedField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace FalandoSobre.Web.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("FalandoSobre.Domain.Entities.Image", b =>
@@ -85,7 +88,7 @@ namespace FalandoSobre.Web.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("FalandoSobre.Domain.Entities.Like", b =>
@@ -116,7 +119,7 @@ namespace FalandoSobre.Web.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("Likes", (string)null);
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("FalandoSobre.Domain.Entities.Report", b =>
@@ -159,7 +162,7 @@ namespace FalandoSobre.Web.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("FalandoSobre.Web.Data.ApplicationUser", b =>
@@ -293,7 +296,7 @@ namespace FalandoSobre.Web.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Institutions", (string)null);
+                    b.ToTable("Institutions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
