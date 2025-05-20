@@ -1,9 +1,8 @@
-﻿using MediatR;
-using FalandoSobre.Api.Extensions;
+﻿using FalandoSobre.Api.Extensions;
 using FalandoSobre.Api.Infrastructure;
 using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.SharedKernel;
-using FalandoSobre.Domain.Entities;
+using MediatR;
 
 namespace FalandoSobre.Api.Endpoints.Reports;
 
