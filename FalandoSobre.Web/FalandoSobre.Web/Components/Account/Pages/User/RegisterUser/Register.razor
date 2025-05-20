@@ -17,43 +17,119 @@
 
 <PageTitle>Register</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Register</MudText>
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('/Images/Slogan.jpeg');
+            background-position: center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(8px);">
+</div>
 
-<MudGrid>
-    <MudItem md="6">
-        <StatusMessage Message="@Message" />
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="height: 100vh; padding: 16px;">
+    <MudItem xs="12" sm="10" md="8" lg="8" xl="6">
+        <MudCard Style="background-color: rgba(255,255,255,0.9); backdrop-filter: blur(2px); border-radius: 12px; margin: 0 auto;">
+            <MudCardContent>
+                <MudGrid Spacing="0">
+                    <!-- Coluna da imagem -->
+                    <MudItem xs="12" sm="6" Style="padding: 0;">
+                        <div style="height: 100%; width: 100%; background-image: url('/Images/SloganOficial.jpeg');
+                                    background-size: cover; background-position: center; border-radius: 12px 0 0 12px; min-height: 500px;">
+                        </div>
+                    </MudItem>
 
-            <MudText Typo="Typo.body1" GutterBottom="true">Create a new account.</MudText>
+                    <!-- Coluna do formulário -->
+                    <MudItem xs="12" sm="6" Style="padding: 24px;">
+                        <StatusMessage Message="@Message" />
 
-            <MudGrid>
-                <MudItem md="12">
-                    <MudStaticTextField For="@(() => Input.Email)" @bind-Value="Input.Email"
-                                        Label="Email" Placeholder="name@example.com"
-                                        UserAttributes="@(new() { { "autocomplete", "username" }, { "aria-required", "true" } } )" />
-                </MudItem>
-                <MudItem md="12">
-                    <MudStaticTextField For="@(() => Input.Password)" @bind-Value="Input.Password"
-                                        Label="Password" InputType="InputType.Password" Placeholder="password"
-                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
-                </MudItem>
-                <MudItem md="12">
-                    <MudStaticTextField For="@(() => Input.ConfirmPassword)" @bind-Value="Input.ConfirmPassword"
-                                        Label="Confirm Password" InputType="InputType.Password" Placeholder="confirm password"
-                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
-                </MudItem>
-                <MudItem md="12">
-                    <MudStaticButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" FormAction="FormAction.Submit">Register</MudStaticButton>
-                </MudItem>
-            </MudGrid>
-        </EditForm>
-    </MudItem>
-    <MudItem md="6">
-        <MudText Typo="Typo.body1" GutterBottom="true">Use another service to register.</MudText>
-        <ExternalLoginPicker />
+                        <MudCardHeader Class="justify-center">
+                            <MudText Typo="Typo.h5" Class="text-center"><strong>Crie sua conta</strong></MudText>
+                        </MudCardHeader>
+
+                        <EditForm Model="@Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                            <DataAnnotationsValidator />
+
+                            <MudGrid Spacing="3">
+                                <MudItem xs="12">
+                                    <MudStaticTextField Label="E-mail"
+                                                        @bind-Value="Input.Email"
+                                                        For="@(() => Input.Email)"
+                                                        Placeholder="seu@email.com"
+                                                        Required="true"
+                                                        AdornmentIcon="@Icons.Material.Filled.Email"
+                                                        Adornment="Adornment.Start"
+                                                        Variant="Variant.Outlined"
+                                                        UserAttributes="@(new() { { "autocomplete", "email" } })" />
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudStaticTextField @bind-Value="Input.UserName"
+                                                        Label="Apelido"
+                                                        Placeholder="Como quer ser chamado"
+                                                        AdornmentIcon="@Icons.Material.Filled.Person"
+                                                        Adornment="Adornment.Start"
+                                                        Required="true"
+                                                        Variant="Variant.Outlined"
+                                                        UserAttributes="@(new() { { "autocomplete", "username" } })" />
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudStaticTextField @bind-Value="Input.Password"
+                                                        Label="Senha"
+                                                        InputType="InputType.Password"
+                                                        AdornmentIcon="@Icons.Material.Filled.Lock"
+                                                        Adornment="Adornment.Start"
+                                                        Required="true"
+                                                        Variant="Variant.Outlined"
+                                                        UserAttributes="@(new() { { "autocomplete", "new-password" } })" />
+                                    <MudText Typo="Typo.caption" Class="mt-1">Mínimo de 6 caracteres</MudText>
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudStaticTextField @bind-Value="Input.ConfirmPassword"
+                                                        Label="Confirmar Senha"
+                                                        InputType="InputType.Password"
+                                                        AdornmentIcon="@Icons.Material.Filled.Lock"
+                                                        Adornment="Adornment.Start"
+                                                        Required="true"
+                                                        Variant="Variant.Outlined"
+                                                        UserAttributes="@(new() { { "autocomplete", "new-password" } })" />
+                                </MudItem>
+
+                                <MudItem xs="12" Class="mt-4">
+                                    <MudButton ButtonType="ButtonType.Submit"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               FullWidth="true"
+                                               EndIcon="@Icons.Material.Filled.ArrowForward">
+                                        Registrar
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </EditForm>
+
+                        <MudCardActions Class="justify-center mt-4">
+                            <MudText Typo="Typo.body2">
+                                Já tem uma conta? <MudLink Href="Account/Login" Color="Color.Primary">Faça login</MudLink>
+                            </MudText>
+                        </MudCardActions>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
     </MudItem>
 </MudGrid>
+
+<style>
+    .mud-input-outlined-border {
+        border-radius: 8px !important;
+    }
+
+    @@media (max-width: 600px) {
+        .mud-card-content .mud-grid > .mud-item:first-child {
+            border-radius: 12px 12px 0 0 !important;
+        }
+    }
+</style>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -68,9 +144,30 @@
 
     public async Task RegisterUser(EditContext editContext)
     {
+        var existngEmail = await UserManager.FindByEmailAsync(Input.Email);
+        if (existngEmail != null)
+        {
+            identityErrors = new List<IdentityError>
+            {
+                new IdentityError {Description = "O e-mail inserido já está em uso."}
+            };
+            return;
+        }
+        ;
+
+        var existingUserName = await UserManager.FindByNameAsync(Input.UserName);
+        if (existingUserName != null)
+        {
+            identityErrors = new List<IdentityError>
+            {
+                new IdentityError {Description = "O apelido inserido já está em uso."}
+            };
+            return;
+        }
+
         var user = CreateUser();
 
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        await UserStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
         var result = await UserManager.CreateAsync(user, Input.Password);
@@ -142,5 +239,10 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo necessário")]
+        [DataType(DataType.Text)]
+        [Display(Name = "Apelido")]
+        public string UserName { get; set; } = "";
     }
 }
