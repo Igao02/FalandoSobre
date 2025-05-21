@@ -1,0 +1,9 @@
+﻿.mud-input-outlined-border {
+    border-radius: 8px !important;
+}
+
+@media (max-width: 600px) {
+    .mud-card-content .mud-grid > .mud-item:first-child {
+        border-radius: 12px 12px 0 0 !important;
+    }
+}

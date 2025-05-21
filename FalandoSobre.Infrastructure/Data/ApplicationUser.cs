@@ -13,4 +13,6 @@ public class ApplicationUser : IdentityUser
     public List<Like> Likes { get; set; } = new List<Like>();
 
     public List<Institution> Institutions { get; set; } = new List<Institution>();
+
+    public List<Logs> Logs { get; set; } = new List<Logs>();
 }
