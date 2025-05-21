@@ -28,10 +28,8 @@ public class ReportRepository : IReportRepository
 
     public async Task<Report> AddAsync(Report report)
     {
-        Console.WriteLine($"[Repositório] Recebido ID: {report.Id}");
         await _context.AddAsync(report);
         await _context.SaveChangesAsync();
-        Console.WriteLine($"[Repositório] Após SaveChanges ID: {report.Id}");
         return report;
     }
 
