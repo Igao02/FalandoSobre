@@ -2,5 +2,5 @@
 
 namespace FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
 
-public sealed record class CreateImageCommand(string ImageUrl, byte[] ConteudoArquivo, DateTime ImageDate, Guid ReportId)
+public sealed record class CreateImageCommand(string ImageUrl, byte[] ConteudoArquivo, DateTime ImageDate, Guid ReportId, string ApplicationUserId)
     : ICommand<CreateImageResponse>;

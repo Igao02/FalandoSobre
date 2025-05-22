@@ -10,11 +10,13 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
 {
     private readonly IImageRepository _imageRepository;
     private readonly ILogger<CreateImageHandler> _logger;
+    private readonly ILogRepository _logRepository;
 
-    public CreateImageHandler(IImageRepository imageRepository, ILogger<CreateImageHandler> logger)
+    public CreateImageHandler(IImageRepository imageRepository, ILogger<CreateImageHandler> logger, ILogRepository logRepository )
     {
         _imageRepository = imageRepository;
         _logger = logger;
+        _logRepository = logRepository;
     }
 
     public async Task<Result<CreateImageResponse>> Handle(CreateImageCommand request, CancellationToken cancellationToken)
@@ -55,7 +57,8 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
                 imageUrl: filePath,
                 conteudoArquivo: null,
                 imageDate: DateTime.Now,
-                reportId: request.ReportId
+                reportId: request.ReportId,
+                applicationUserId: request.ApplicationUserId
             );
             _logger.LogInformation("Criando imagem {image}", image);
 
@@ -69,9 +72,21 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
                 ImageUrl = result.ImageUrl,
                 ConteudoArquivo = null,
                 ImageDate = result.ImageDate,
-                ReportId = result.ReportId
+                ReportId = result.ReportId,
+                ApplicationUserId = result.ApplicationUserId!
             };
             _logger.LogInformation("Resposta da criação da imagem: {Response}", response);
+
+            var log = new Logs
+            {
+                Action = "Imagem criada com sucesso",
+                Created_At = DateTime.UtcNow,
+                EntityType = "Image",
+                ApplicationUserId = request.ApplicationUserId,
+                UserName = ""
+            };
+
+            await _logRepository.Create(log);
 
             return Result.Success(response);
         }

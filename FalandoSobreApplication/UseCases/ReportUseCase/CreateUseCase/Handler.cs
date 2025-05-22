@@ -11,11 +11,13 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
 {
     private readonly IReportRepository _reportRepository;
     private readonly ILogger<CreateReportHandler> _logger;
+    private readonly ILogRepository _logRepository;
 
-    public CreateReportHandler(IReportRepository reportRepository, ILogger<CreateReportHandler> logger)
+    public CreateReportHandler(IReportRepository reportRepository, ILogger<CreateReportHandler> logger, ILogRepository logRepository)
     {
         _reportRepository = reportRepository;
         _logger = logger;
+        _logRepository = logRepository;
     }
 
     public async Task<Result<CreateReportResponse>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
@@ -57,6 +59,17 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
                 Actived = createdReport.Actived,
                 ApplicationUserId = createdReport.ApplicationUserId
             };
+
+            var log = new Logs
+            {
+                Action = "Publicação criada com sucesso",
+                ApplicationUserId = request.ApplicationUserId,
+                Created_At = DateTime.UtcNow,
+                EntityType = "Report",
+                UserName = request.UserName,
+            };
+
+            await _logRepository.Create(log);
 
             return Result.Success(response);
         }
