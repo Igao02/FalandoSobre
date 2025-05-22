@@ -157,7 +157,8 @@ public class CreateReportPage : ComponentBase
                     imageUrl: fileName,
                     conteudoArquivo: fileBytes,
                     imageDate: DateTime.Now,
-                    reportId: Model.Id 
+                    reportId: Model.Id,
+                    applicationUserId: Model.ApplicationUserId
                 );
                 Logger.LogInformation($"Criando nova imagem: {novaImagem}");
 

@@ -7,5 +7,6 @@ public sealed class CreateImageResponse
     public byte[]? ConteudoArquivo { get; init; } = default!;
     public DateTime ImageDate { get; init; } = DateTime.Now;
     public Guid ReportId { get; init; } = default!;
+    public string ApplicationUserId { get; init; } = default!;
 
 }

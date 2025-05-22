@@ -28,7 +28,8 @@ public class ImageHandler : IImageRepository
                 imageUrl: createdResponse!.ImageUrl,
                 conteudoArquivo: null,
                 imageDate: createdResponse.ImageDate,
-                reportId: createdResponse.ReportId
+                reportId: createdResponse.ReportId,
+                applicationUserId: createdResponse.ApplicationUserId
             )
             {
                 Id = createdResponse.Id

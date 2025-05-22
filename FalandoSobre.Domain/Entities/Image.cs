@@ -17,15 +17,18 @@ public class Image : Entity
 
     public bool Actived { get; set; } = true;
 
+    public string? ApplicationUserId { get; set; }
+
     public virtual Guid ReportId { get; set; }
 
     public virtual Report Report { get; set; }
 
-    public Image(string imageUrl, byte[]? conteudoArquivo, DateTime imageDate, Guid reportId) : base()
+    public Image(string imageUrl, byte[]? conteudoArquivo, DateTime imageDate, Guid reportId, string applicationUserId) : base()
     {
         ImageUrl = imageUrl;
         ImageDate = imageDate;
         ReportId = reportId;
         ConteudoArquivo = conteudoArquivo;
+        ApplicationUserId = applicationUserId;
     }
 }

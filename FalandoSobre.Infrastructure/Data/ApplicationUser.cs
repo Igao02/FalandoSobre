@@ -15,4 +15,6 @@ public class ApplicationUser : IdentityUser
     public List<Institution> Institutions { get; set; } = new List<Institution>();
 
     public List<Logs> Logs { get; set; } = new List<Logs>();
+
+    public List<Image> Images { get; set; } = new List<Image>();
 }

@@ -8,7 +8,7 @@ namespace FalandoSobre.Api.Endpoints.Image;
 
 public sealed class CreateImageEndpoint : IEndpoint
 {
-    public sealed record Request(string ImageUrl, byte[] ConteudoArquivo, DateTime CreatedAt, Guid ReportId);
+    public sealed record Request(string ImageUrl, byte[] ConteudoArquivo, DateTime CreatedAt, Guid ReportId, string ApplicationUserId);
 
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
@@ -18,7 +18,8 @@ public sealed class CreateImageEndpoint : IEndpoint
                 request.ImageUrl,
                 request.ConteudoArquivo,
                 request.CreatedAt,
-                request.ReportId);
+                request.ReportId,
+                request.ApplicationUserId);
 
             Result<CreateImageResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(
