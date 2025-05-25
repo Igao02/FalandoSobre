@@ -1,5 +1,4 @@
-﻿using Azure;
-using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
+﻿using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 
@@ -26,7 +25,6 @@ public class ReportHandler: IReportRepository
         {
 
             var createdResponse = await response.Content.ReadFromJsonAsync<CreateReportResponse>();
-            _logger.LogInformation("response depois {response}: ", response);
 
             var createdReport = new Report(
                 createdResponse!.ReportName,

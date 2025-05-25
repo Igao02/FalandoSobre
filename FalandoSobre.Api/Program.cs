@@ -72,6 +72,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Creat
 builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<ILogRepository, LogRepository>();
+builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSenderService>();
 
