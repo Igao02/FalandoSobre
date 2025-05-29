@@ -2,144 +2,190 @@
 @rendermode InteractiveServer
 @inherits CreateInstitutionPage
 
+<MudImage Src="/Images/Fundo_OFC.png"
+          Style="position: fixed;
+                     top: 0; left: 0;
+                     width: 100%; height: 100%;
+                     background-position: center;
+                     background: no-repeat;
+                     background-size: cover;
+                     z-index: -1;" />
 
-
-<MudGrid Justify="Justify.Center" AlignItems="AlignItems.center">
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.FlexStart" Style="margin-top: 1rem;">
     <MudItem xs="12" sm="10" md="8" lg="6">
-        <MudPaper Class="px-4 py-6 d-flex flex-column" Elevation="10" Style=" background-color: rgba(255,255,255,0.98); border-radius: 16px; ">
-            <MudItem Style="justify-content: center; justify-items: center; align-items: center">
-                <MudText Typo="Typo.h4" Color="Color.Primary" GutterBottom="true">Criar Insituição Parceira</MudText>
+        <MudPaper Class="px-6 py-8 d-flex flex-column" Elevation="10" Style="background-color: rgba(255,255,255,0.98); border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+            <!-- Cabeçalho com ícone -->
+            <MudItem Class="d-flex justify-center mb-4">
+                <MudAvatar Color="Color.Primary" Style="background: linear-gradient(45deg, #6200EE 30%, #03DAC6 90%);">
+                    <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Large" />
+                </MudAvatar>
             </MudItem>
-            <MudItem Style="max-width: 100%">
+
+            <!-- Título e subtítulo -->
+            <MudItem Class="text-center mb-6" Style="justify-content: center; justify-items: center; align-items: center">
+                <MudText Typo="Typo.h4" Color="Color.Primary" GutterBottom="true" Class="font-weight-bold">Criar Instituição Parceira</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Preencha os dados da instituição abaixo</MudText>
+            </MudItem>
+
+            <!-- Mensagens de status -->
+            <MudItem Class="mb-4">
                 @if (!string.IsNullOrEmpty(successMessage))
                 {
-                    <MudAlert Severity="Severity.Success" Class="mb-3" Elevation="2">@successMessage</MudAlert>
+                    <MudAlert Severity="Severity.Success" Class="mb-4" Elevation="2" Icon="@Icons.Material.Filled.CheckCircle">
+                        @successMessage
+                    </MudAlert>
                 }
                 @if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    <MudAlert Severity="Severity.Error" Class="mb-3" Elevation="2">@errorMessage</MudAlert>
+                    <MudAlert Severity="Severity.Error" Class="mb-4" Elevation="2" Icon="@Icons.Material.Filled.Error">
+                        @errorMessage
+                    </MudAlert>
                 }
             </MudItem>
 
             <EditForm Model="@Model" OnValidSubmit="CreateInstitution">
                 <DataAnnotationsValidator />
 
-                <MudItem>
+                <!-- Nome da Instituição -->
+                <MudItem Class="mb-4">
                     <MudTextField Label="Nome da Instituição"
                                   HelperText="Máximo de 100 caracteres"
                                   @bind-Value="Model.CorporateName"
                                   For="@(() => Model.CorporateName)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
                                   Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
+                                  Required="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Business"
+                                  Adornment="Adornment.Start"
+                                  Class="rounded-borders"
                                   CharCounter="true"
                                   MaxLength="100" />
                 </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Documento"
-                                  HelperText="Máximo de 14 caracteres"
+                <!-- Documento -->
+                <MudItem Class="mb-4">
+                    <MudTextField Label="CNPJ"
+                                  HelperText="Digite apenas números"
                                   @bind-Value="Model.Document"
                                   For="@(() => Model.Document)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
                                   Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
+                                  Required="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Assignment"
+                                  Adornment="Adornment.Start"
+                                  Class="rounded-borders"
                                   CharCounter="true"
                                   MaxLength="14" />
                 </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Cep"
+                <!-- CEP -->
+                <MudItem Class="mb-4">
+                    <MudTextField Label="CEP"
                                   @bind-Value="Model.Cep"
                                   For="@(() => Model.Cep)"
                                   OnBlur="HandleCepChange"
-                                  Margin="Margin.Dense"
-                                  Required="true"
                                   Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
+                                  Required="true"
+                                  AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                  Adornment="Adornment.Start"
+                                  Class="rounded-borders"
                                   CharCounter="true"
                                   MaxLength="9" />
                 </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Cidade"
-                                  @bind-Value="Model.City"
-                                  For="@(() => Model.City)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="50" />
-                </MudItem>
+                <!-- Endereço -->
+                <MudGrid Spacing="3" Class="mb-2">
+                    <MudItem xs="12" sm="8">
+                        <MudTextField Label="Rua"
+                                      @bind-Value="Model.Street"
+                                      For="@(() => Model.Street)"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      AdornmentIcon="@Icons.Material.Filled.AddRoad"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="150" />
+                    </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Rua"
-                                  @bind-Value="Model.Street"
-                                  For="@(() => Model.Street)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="150" />
-                </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Label="Número"
+                                      @bind-Value="Model.NumHome"
+                                      For="@(() => Model.NumHome)"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Home"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="10" />
+                    </MudItem>
+                </MudGrid>
 
-                <MudItem>
-                    <MudTextField Label="Número do Estabelecimento"
-                                  @bind-Value="Model.NumHome"
-                                  For="@(() => Model.NumHome)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="10" />
-                </MudItem>
+                <!-- Complemento e Bairro -->
+                <MudGrid Spacing="3" Class="mb-2">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Label="Complemento"
+                                      @bind-Value="Model.Complement"
+                                      For="@(() => Model.Complement)"
+                                      Variant="Variant.Outlined"
+                                      AdornmentIcon="@Icons.Material.Filled.Apartment"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="50" />
+                    </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Complemento"
-                                  @bind-Value="Model.Complement"
-                                  For="@(() => Model.Complement)"
-                                  Margin="Margin.Dense"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="50" />
-                </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Label="Bairro"
+                                      @bind-Value="Model.Neighborhood"
+                                      For="@(() => Model.Neighborhood)"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      AdornmentIcon="@Icons.Material.Filled.LocationCity"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="50" />
+                    </MudItem>
+                </MudGrid>
 
-                <MudItem>
-                    <MudTextField Label="Bairro"
-                                  @bind-Value="Model.Neighborhood"
-                                  For="@(() => Model.Neighborhood)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="50" />
-                </MudItem>
+                <!-- Cidade e Estado -->
+                <MudGrid Spacing="3" Class="mb-4">
+                    <MudItem xs="12" sm="8">
+                        <MudTextField Label="Cidade"
+                                      @bind-Value="Model.City"
+                                      For="@(() => Model.City)"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      AdornmentIcon="@Icons.Material.Filled.LocationCity"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="50" />
+                    </MudItem>
 
-                <MudItem>
-                    <MudTextField Label="Estado"
-                                  @bind-Value="Model.Uf"
-                                  For="@(() => Model.Uf)"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Class="mb-4 rounded-borders"
-                                  CharCounter="true"
-                                  MaxLength="2" />
-                </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Label="Estado"
+                                      @bind-Value="Model.Uf"
+                                      For="@(() => Model.Uf)"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Map"
+                                      Adornment="Adornment.Start"
+                                      Class="rounded-borders"
+                                      CharCounter="true"
+                                      MaxLength="2" />
+                    </MudItem>
+                </MudGrid>
 
-                <MudItem>
+                <!-- Botão de Submit -->
+                <MudItem Class="d-flex justify-center mt-4">
                     <MudButton Color="Color.Primary"
-                    Variant="Variant.Filled"
-                    Disabled="@uploadInProgress"
-                    ButtonType="ButtonType.Submit"
-                    EndIcon="@Icons.Material.Filled.Send">
+                               Variant="Variant.Filled"
+                               Disabled="@uploadInProgress"
+                               ButtonType="ButtonType.Submit"
+                               EndIcon="@Icons.Material.Filled.Send"
+                               Size="Size.Large"
+                               Style="min-width: 200px; height: 48px; border-radius: 12px;">
                         @if (uploadInProgress)
                         {
                             <MudProgressCircular Size="Size.Small" Color="Color.Inherit" Class="mr-2" />
@@ -149,9 +195,8 @@
                         {
                             <span>Criar Instituição</span>
                         }
-                </MudButton>
+                    </MudButton>
                 </MudItem>
-
             </EditForm>
         </MudPaper>
     </MudItem>
