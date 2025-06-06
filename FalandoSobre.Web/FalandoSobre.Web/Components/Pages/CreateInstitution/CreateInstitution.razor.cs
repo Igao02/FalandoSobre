@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using static System.Net.WebRequestMethods;
 
 namespace FalandoSobre.Web.Components.Pages.CreateInstitution;
 

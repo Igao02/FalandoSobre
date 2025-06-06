@@ -1,10 +1,14 @@
 ﻿using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
+using FalandoSobre.Domain.Dto.PagedRequest;
+using FalandoSobre.Domain.Dto.PagedResponse;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
+using FalandoSobreApplication.UseCases.ReportUseCase.ListUseCase;
+using System.Text.Json;
 
 namespace FalandoSobre.Web.Handlers;
 
-public class ReportHandler: IReportRepository
+public class ReportHandler : IReportRepository
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<ReportHandler> _logger;
@@ -66,9 +70,39 @@ public class ReportHandler: IReportRepository
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Report>> GetListAsync()
+    public async Task<PagedResponse<List<Report>>> GetListAsync(PagedRequest request)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var url = $"/reports/list?page={request.Page}&pageSize={request.PageSize}";
+
+
+            var response = await _httpClient.GetFromJsonAsync<PagedResponse<List<ListReportReponse>>>(url);
+
+            if (response == null || response.Data == null)
+                return new PagedResponse<List<Report>>(new List<Report>(), 0, request.Page, request.PageSize);
+
+            var reports = response.Data.Select(r => new Report(
+                r.ReportName,
+                r.TypeReport,
+                r.ReportDescription,
+                r.ReportDate,
+                r.UserName,
+                r.IsEvent,
+                r.Actived,
+                r.ApplicationUserId
+            )
+            {
+                Id = r.Id
+            }).ToList();
+
+            return new PagedResponse<List<Report>>(reports, response.TotalItems, response.PageNumber, response.PageSize);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Erro de requisição ao buscar os relatórios paginados.");
+            throw new ApplicationException("Erro ao buscar os relatórios.", ex);
+        }
     }
 
     public Task<IEnumerable<Report>> GetReportsByTypeAsync(string type)

@@ -131,12 +131,12 @@
                     <div class="text-center mt-4">
                         <MudButton Color="Color.Primary"
                                    Variant="Variant.Filled"
-                                   Disabled="@uploadInProgress"
+                                   Disabled="@isLoading"
                                    ButtonType="ButtonType.Submit"
                                    EndIcon="@Icons.Material.Filled.Send"
                                    Class="rounded-lg px-6 py-3"
                                    Style="min-width: 200px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
-                            @if (uploadInProgress)
+                            @if (isLoading)
                             {
                                 <MudProgressCircular Size="Size.Small" Color="Color.Inherit" Class="mr-2" />
                                 <span>Enviando...</span>

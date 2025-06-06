@@ -14,20 +14,18 @@
 <MudGrid Justify="Justify.Center" AlignItems="AlignItems.FlexStart" Style="margin-top: 1rem;">
     <MudItem xs="12" sm="10" md="8" lg="6">
         <MudPaper Class="px-6 py-8 d-flex flex-column" Elevation="10" Style="background-color: rgba(255,255,255,0.98); border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
-            <!-- Cabeçalho com ícone -->
+
             <MudItem Class="d-flex justify-center mb-4">
                 <MudAvatar Color="Color.Primary" Style="background: linear-gradient(45deg, #6200EE 30%, #03DAC6 90%);">
                     <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Large" />
                 </MudAvatar>
             </MudItem>
 
-            <!-- Título e subtítulo -->
             <MudItem Class="text-center mb-6" Style="justify-content: center; justify-items: center; align-items: center">
                 <MudText Typo="Typo.h4" Color="Color.Primary" GutterBottom="true" Class="font-weight-bold">Criar Instituição Parceira</MudText>
                 <MudText Typo="Typo.body2" Color="Color.Secondary">Preencha os dados da instituição abaixo</MudText>
             </MudItem>
 
-            <!-- Mensagens de status -->
             <MudItem Class="mb-4">
                 @if (!string.IsNullOrEmpty(successMessage))
                 {
@@ -46,7 +44,6 @@
             <EditForm Model="@Model" OnValidSubmit="CreateInstitution">
                 <DataAnnotationsValidator />
 
-                <!-- Nome da Instituição -->
                 <MudItem Class="mb-4">
                     <MudTextField Label="Nome da Instituição"
                                   HelperText="Máximo de 100 caracteres"
@@ -61,7 +58,6 @@
                                   MaxLength="100" />
                 </MudItem>
 
-                <!-- Documento -->
                 <MudItem Class="mb-4">
                     <MudTextField Label="CNPJ"
                                   HelperText="Digite apenas números"
@@ -76,7 +72,6 @@
                                   MaxLength="14" />
                 </MudItem>
 
-                <!-- CEP -->
                 <MudItem Class="mb-4">
                     <MudTextField Label="CEP"
                                   @bind-Value="Model.Cep"
@@ -91,7 +86,6 @@
                                   MaxLength="9" />
                 </MudItem>
 
-                <!-- Endereço -->
                 <MudGrid Spacing="3" Class="mb-2">
                     <MudItem xs="12" sm="8">
                         <MudTextField Label="Rua"
@@ -120,7 +114,6 @@
                     </MudItem>
                 </MudGrid>
 
-                <!-- Complemento e Bairro -->
                 <MudGrid Spacing="3" Class="mb-2">
                     <MudItem xs="12" sm="6">
                         <MudTextField Label="Complemento"
@@ -148,7 +141,6 @@
                     </MudItem>
                 </MudGrid>
 
-                <!-- Cidade e Estado -->
                 <MudGrid Spacing="3" Class="mb-4">
                     <MudItem xs="12" sm="8">
                         <MudTextField Label="Cidade"
@@ -177,7 +169,6 @@
                     </MudItem>
                 </MudGrid>
 
-                <!-- Botão de Submit -->
                 <MudItem Class="d-flex justify-center mt-4">
                     <MudButton Color="Color.Primary"
                                Variant="Variant.Filled"

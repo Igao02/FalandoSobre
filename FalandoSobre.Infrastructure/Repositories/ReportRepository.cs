@@ -1,4 +1,6 @@
-﻿using FalandoSobre.Domain.Entities;
+﻿using FalandoSobre.Domain.Dto.PagedRequest;
+using FalandoSobre.Domain.Dto.PagedResponse;
+using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Web.Data;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,19 @@ public class ReportRepository : IReportRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Report>> GetListAsync() => await _context.Reports.OrderByDescending(r => r.ReportsDate).ToListAsync();
+    public async Task<PagedResponse<List<Report>>> GetListAsync(PagedRequest request)
+    {
+        var query = _context.Reports.OrderByDescending(r => r.ReportsDate).AsQueryable();
+
+        var totalItems = await query.CountAsync();
+
+        var data = await query
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        return new PagedResponse<List<Report>>(data, totalItems, request.Page, request.PageSize);
+    }
 
     public async Task<IEnumerable<Report>> GetReportsByTypeAsync(string type)
     {
