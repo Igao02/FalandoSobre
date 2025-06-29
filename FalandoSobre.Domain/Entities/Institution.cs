@@ -49,17 +49,22 @@ public class Institution : Entity
 
     public bool Actived { get; set; } = true;
 
-    public Institution(string corporateName, string document, string cep, string street, int numHome, string? complement, DateTime? creationDate, string userName, string neighborhood, string uf) : base()
+    public string ApplicationUserId { get; set; }
+
+    public Institution(string corporateName, string document, string cep, string city, string street, int numHome, string? complement, DateTime? creationDate, string userName, string neighborhood, string uf, string applicationUserId, bool actived) : base()
     {
         CorporateName = corporateName;
         Document = document;
         Cep = cep;
+        City = city;
         Street = street;
         NumHome = numHome;
+        Complement = complement;
         CreationDate = creationDate;
         UserName = userName;
-        Complement = complement;
         Neighborhood = neighborhood;
         Uf = uf;
+        ApplicationUserId = applicationUserId;
+        Actived = actived;
     }
 }

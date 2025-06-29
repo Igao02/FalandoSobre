@@ -1,0 +1,81 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inherits HomePage
+@using MudBlazor
+
+<PageTitle>Home</PageTitle>
+
+<MudImage Src="/Images/Fundo_OFC.png"
+          Style="position: fixed;
+                 top: 0; left: 0;
+                 width: 100%; height: 100%;
+                 background-position: center;
+                 background: no-repeat;
+                 background-size: cover;
+                 z-index: -1;" />
+
+<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="margin-top: 1rem;">
+    <MudItem xs="12" sm="10" md="8" lg="6">
+        <MudPaper Elevation="10" Style="background-color: rgba(255,255,255,0.98); border-radius: 16px; width: 100%; margin: auto; padding: 16px;">
+            <MudStack Gap="16px">
+                @foreach (var report in Model)
+                {
+                    <MudCard Style="margin-bottom: 16px;">
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6" Style="font-weight: 600;">@report.ReportName</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                Postado por: @report.UserName
+                            </MudText>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">@report.ReportDescription</MudText>
+                            
+                            @if (report.Images != null && report.Images.Any())
+                            {
+                                <MudGrid Style="margin-top: 16px; gap: 8px;">
+                                    @foreach (var image in report.Images)
+                                    {
+                                        <MudItem xs="12" sm="@(report.Images.Count > 1 ? 6 : 12)" md="@(report.Images.Count > 2 ? 4 : (report.Images.Count > 1 ? 6 : 12))">
+                                            <MudImage Src="@image.ImageUrl" 
+                                                    Class="post-image"
+                                                    Style="width: 100%; height: auto; max-height: 400px; object-fit: contain; border-radius: 8px; border: 1px solid #e0e0e0;"/>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic; margin-top: 8px;">
+                                    Nenhuma imagem disponível
+                                </MudText>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.ThumbUp" Color="Color.Default" Size="Size.Small"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Comment" Color="Color.Default" Size="Size.Small"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" Size="Size.Small"/>
+                        </MudCardActions>
+                    </MudCard>
+                }
+                <MudPagination Color="Color.Primary"
+                               SelectedPage="CurrentPage"
+                               SelectedChanged="OnPageChanged"
+                               Count="TotalPages"
+                               Size="Size.Small"
+                               Class="mt-4" />
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<style>
+    .post-image {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .post-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>

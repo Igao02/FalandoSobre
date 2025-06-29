@@ -49,12 +49,16 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
             _logger.LogInformation("Criando diretório para upload: {UploadFolder}", uploadFolder);
             Directory.CreateDirectory(uploadFolder);
 
-            var filePath = Path.Combine(uploadFolder, request.ImageUrl);
+            
+            var fileName = Path.GetFileName(request.ImageUrl); 
+            var filePath = Path.Combine(uploadFolder, fileName); 
 
             await File.WriteAllBytesAsync(filePath, request.ConteudoArquivo, cancellationToken);
+            
+            var imageUrl = "https://localhost:7249/ReportImages/Uploads/" + fileName;
 
             var image = new Image(
-                imageUrl: filePath,
+                imageUrl: imageUrl,
                 conteudoArquivo: null,
                 imageDate: DateTime.Now,
                 reportId: request.ReportId,
@@ -97,5 +101,4 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
             return Result.Failure<CreateImageResponse>(error);
         }
     }
-
 }

@@ -1,19 +1,14 @@
 ﻿using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
+using FalandoSobreApplication.UseCases.ImageUseCase.ListByReportId;
 
 namespace FalandoSobre.Web.Handlers;
 
-public class ImageHandler : IImageRepository
+public class ImageHandler(IHttpClientFactory httpClientFactory, ILogger<ReportHandler> logger)
+    : IImageRepository
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<ReportHandler> _logger;
-
-    public ImageHandler(IHttpClientFactory httpClientFactory, ILogger<ReportHandler> logger)
-    {
-        _httpClient = httpClientFactory.CreateClient("ApiClient");
-        _logger = logger;
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("ApiClient");
 
     public async Task<Image> AddImageAsync(Image image)
     {
@@ -22,7 +17,7 @@ public class ImageHandler : IImageRepository
         if (response.Result.IsSuccessStatusCode)
         {
             var createdResponse = await response.Result.Content.ReadFromJsonAsync<CreateImageResponse>();
-            _logger.LogInformation("Imagem criada com sucesso: {createdResponse}", createdResponse);
+            logger.LogInformation("Imagem criada com sucesso: {createdResponse}", createdResponse);
 
             var createdImage = new Image(
                 imageUrl: createdResponse!.ImageUrl,
@@ -40,7 +35,7 @@ public class ImageHandler : IImageRepository
         else
         {
             var error = response.Result.Content.ReadAsStringAsync();
-            _logger.LogError("Erro ao criar a imagem: {Error}", error);
+            logger.LogError("Erro ao criar a imagem: {Error}", error);
             throw new ApplicationException($"Erro ao criar a imagem: {error}");
         }
     }
@@ -58,5 +53,28 @@ public class ImageHandler : IImageRepository
     public Task<IEnumerable<Image>> GetListAsync()
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<(Guid Id, string ImageUrl, Guid? ReportId)?> GetImageByReportId(Guid id)
+    {
+        var url = $"/images/reports/?id={id}";
+        var response = await _httpClient.GetAsync(url);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        if (jsonResponse != null)
+        {
+            logger.LogInformation("Imagem recebida com sucesso: {jsonResponse}", jsonResponse);
+        }
+
+        if (!response.IsSuccessStatusCode) return null;
+        var imageResponse = await response.Content.ReadFromJsonAsync<ImageListByReportIdResponse>();
+
+        if (imageResponse is null)
+            return null;
+
+        return (
+            imageResponse.Id,
+            imageResponse.ImageUrl!,
+            imageResponse.ReportId
+        );
     }
 }

@@ -1,5 +1,4 @@
 using FalandoSobre.Domain.Repositories;
-using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
@@ -43,9 +42,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
 
 builder.Services.AddTransient<IReportRepository, ReportHandler>();
 builder.Services.AddTransient<IImageRepository, ImageHandler>();
-//builder.Services.AddTransient<ICommentRepository, CommentRepository>();
-//builder.Services.AddTransient<ILikeRepository, LikeRepository>();
-//builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
+builder.Services.AddTransient<IInstitutionRepository, InstitutionHandler>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -74,7 +71,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseWebAssemblyDebugging();
-
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

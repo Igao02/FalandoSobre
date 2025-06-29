@@ -26,7 +26,7 @@ public class CreateReportPage : ComponentBase
     protected string errorMessage = string.Empty;
     protected List<IBrowserFile> selectedFiles = new List<IBrowserFile>();
     protected List<string> imagePreviewUrls = new List<string>();
-    protected bool uploadInProgress = false;
+    protected bool isLoading = false;
 
     [Inject]
     public required ILogger<CreateReportPage> Logger { get; set; }
@@ -34,7 +34,7 @@ public class CreateReportPage : ComponentBase
 
     protected async Task CreateReport()
     {
-        uploadInProgress = true;
+        isLoading = true;
         successMessage = string.Empty;
         errorMessage = string.Empty;
 
@@ -60,12 +60,12 @@ public class CreateReportPage : ComponentBase
         catch (Exception ex)
         {
             Logger!.LogInformation($"Erro ao criar publicação: {ex.InnerException?.Message ?? ex.Message}");
-            uploadInProgress = false;
+            isLoading = false;
             errorMessage = $"{ex.InnerException?.Message ?? ex.Message}";
         }
         finally
         {
-            uploadInProgress = false;
+            isLoading = false;
             selectedFiles.Clear();
             Model = new();
             ImageModel = new();
