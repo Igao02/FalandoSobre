@@ -5,26 +5,15 @@ using FalandoSobre.Web.Data;
 
 namespace FalandoSobre.Infrastructure.Repositories
 {
-    public class ImageRepository : IImageRepository
+    public class ImageRepository(ApplicationDbContext context) : IImageRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public ImageRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<Image?> GetImageAsync(Guid id) => await _context.Images.FindAsync(id);
-
-        public async Task<IEnumerable<Image>> GetListAsync() => await _context.Images.ToListAsync();
-
         public async Task<Image> AddImageAsync(Image image)
         {
             try
             {
-                await _context.AddAsync(image);
+                await context.AddAsync(image);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 return image;
             }
@@ -35,14 +24,28 @@ namespace FalandoSobre.Infrastructure.Repositories
 
             }
         }
-
         public async Task DeleteImageAsync(Guid id)
         {
             var image = await GetImageAsync(id);
 
-            _context.Images.Remove(image!);
+            context.Images.Remove(image!);
 
-           _context.SaveChanges();
+           context.SaveChanges();
         }
+
+        public async Task<Image?> GetImageAsync(Guid id) => await context.Images.FindAsync(id);
+        public async Task<IEnumerable<Image>> GetListAsync() => await context.Images.ToListAsync();
+        public async Task<(Guid Id, string ImageUrl, Guid? ReportId)?> GetImageByReportId(Guid id)
+        {
+            return await context.Images
+                .Where(i => i.ReportId == id)
+                .Select(i => new ValueTuple<Guid, string, Guid?>(
+                    i.Id,
+                    i.ImageUrl,
+                    i.ReportId
+                ))
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

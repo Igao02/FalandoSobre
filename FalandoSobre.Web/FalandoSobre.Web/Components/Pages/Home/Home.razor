@@ -23,14 +23,37 @@
                     <MudCard Style="margin-bottom: 16px;">
                         <MudCardHeader>
                             <MudText Typo="Typo.h6" Style="font-weight: 600;">@report.ReportName</MudText>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">@report.ReportDescription</MudText>
-                        </MudCardContent>
-                        <MudCardActions>
                             <MudText Typo="Typo.caption" Color="Color.Secondary">
                                 Postado por: @report.UserName
                             </MudText>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">@report.ReportDescription</MudText>
+                            
+                            @if (report.Images != null && report.Images.Any())
+                            {
+                                <MudGrid Style="margin-top: 16px; gap: 8px;">
+                                    @foreach (var image in report.Images)
+                                    {
+                                        <MudItem xs="12" sm="@(report.Images.Count > 1 ? 6 : 12)" md="@(report.Images.Count > 2 ? 4 : (report.Images.Count > 1 ? 6 : 12))">
+                                            <MudImage Src="@image.ImageUrl" 
+                                                    Class="post-image"
+                                                    Style="width: 100%; height: auto; max-height: 400px; object-fit: contain; border-radius: 8px; border: 1px solid #e0e0e0;"/>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic; margin-top: 8px;">
+                                    Nenhuma imagem disponível
+                                </MudText>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.ThumbUp" Color="Color.Default" Size="Size.Small"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Comment" Color="Color.Default" Size="Size.Small"/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" Size="Size.Small"/>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -44,3 +67,15 @@
         </MudPaper>
     </MudItem>
 </MudGrid>
+
+<style>
+    .post-image {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .post-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>

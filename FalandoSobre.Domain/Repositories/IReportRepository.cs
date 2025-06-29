@@ -10,7 +10,6 @@ public interface IReportRepository
     Task DeleteAsync(Guid id);
     Task<Report> EditAsync(Report report);
     Task<Report?> GetAsync(Guid id);
-    //Task<IEnumerable<Report>> GetListAsync();
     Task<PagedResponse<List<Report>>> GetListAsync(PagedRequest request);
 
     Task<IEnumerable<Report>> GetReportsByTypeAsync(string type);

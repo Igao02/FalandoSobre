@@ -1,5 +1,4 @@
 ﻿using FalandoSobre.Domain.Dto.PagedRequest;
-using FalandoSobre.Domain.Dto.PagedResponse;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using Microsoft.AspNetCore.Components;
@@ -10,18 +9,20 @@ namespace FalandoSobre.Web.Components.Pages.Home;
 public class HomePage : ComponentBase
 {
     [Inject] public IReportRepository? ReportRepository { get; set; } = null!;
+    [Inject] public IImageRepository? ImageRepository { get; set; } = null!;
     [Inject] public NavigationManager? Navi { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
 
     protected List<Report> Model { get; set; } = new();
-    protected int CurrentPage { get; set; } = 1;
-    protected int PageSize { get; set; } = 5;
-    protected int TotalItems { get; set; }
+    private List<Image> Images { get; set; } = new();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalItems { get; set; }
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
 
-    protected string successMessage = string.Empty;
-    protected string errorMessage = string.Empty;
-    protected bool isLoading = false;
+    private string successMessage = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,7 +38,7 @@ public class HomePage : ComponentBase
         }
     }
 
-    protected async Task LoadReportsAsync()
+    private async Task LoadReportsAsync()
     {
         isLoading = true;
         successMessage = string.Empty;
@@ -51,12 +52,36 @@ public class HomePage : ComponentBase
                 PageSize = PageSize
             };
 
-            // Recebe os dados paginados do backend
             var pagedResult = await ReportRepository!.GetListAsync(pagedRequest);
-
-            // Atualiza os dados da lista de relatórios e o total de itens
             Model = pagedResult.Data;
-            TotalItems = pagedResult.TotalItems;  // Total de itens vindos do backend
+            TotalItems = pagedResult.TotalItems;
+
+            if (Model.Count > 0)
+            {
+                foreach (var report in Model)
+                {
+                    var imageResult = await ImageRepository!.GetImageByReportId(report.Id);
+
+                    if (imageResult is not null)
+                    {
+                        var (id, imageUrl, reportId) = imageResult.Value;
+
+                        report.Images = new List<Image>
+                        {
+                            new()
+                            {
+                                Id = id,
+                                ImageUrl = imageUrl,
+                                ReportId = reportId ?? Guid.Empty
+                            }
+                        };
+                    }
+                    else
+                    {
+                        report.Images = new(); // Para evitar null no front
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {

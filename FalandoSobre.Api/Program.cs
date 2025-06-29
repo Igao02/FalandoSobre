@@ -4,10 +4,9 @@ using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Data;
-using FalandoSobre.Web.Handlers;
-using FalandoSobreApplication.UseCases.ImageUseCase.CreateUseCase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +87,7 @@ builder.Services.AddEndpoints(typeof(CreateReportEndpoint).Assembly);
 var app = builder.Build();
 
 app.UseCors("ApiWeb");
+app.UseStaticFiles();
 
 // Configuração do pipeline de requisição
 if (app.Environment.IsDevelopment())

@@ -9,7 +9,6 @@ namespace FalandoSobre.Api.Endpoints.Report;
 
 public sealed class ListReportEndpoint : IEndpoint
 {
-    //public sealed record Request(int Page, int PageSize);
 
     public void MapEndpoints(IEndpointRouteBuilder app)
     {

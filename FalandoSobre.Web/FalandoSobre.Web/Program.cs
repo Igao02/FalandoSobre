@@ -1,5 +1,4 @@
 using FalandoSobre.Domain.Repositories;
-using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
@@ -72,7 +71,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseWebAssemblyDebugging();
-
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
