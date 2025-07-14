@@ -1,0 +1,34 @@
+﻿@page "/Profile/Edit"
+@* @using FalandoSobre.Web.Components.Account.Shared *@
+@inherits EditProfilePage
+@rendermode InteractiveServer
+
+<MudPopoverProvider />
+@* <StatusMessage /> *@
+
+<PageTitle>Perfil</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Perfil</MudText>
+
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmitAsync" FormName="profile">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <MudGrid>
+        <MudItem md="12">
+            <MudTextField Value="@username" Label="Nome de usuário" Disabled="true" />
+        </MudItem>
+        <MudItem md="12">
+            <MudTextField @bind-Value="Model.PhoneNumber"
+                          Label="Número de telefone"
+                          HelperText="Por favor, insira seu número de telefone." />
+        </MudItem>
+        <MudItem md="12">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" ButtonType="ButtonType.Submit">
+                Salvar
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.subtitle1">Valor digitado: @Model.PhoneNumber</MudText>
+</EditForm>
+

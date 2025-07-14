@@ -78,7 +78,7 @@ public class HomePage : ComponentBase
                     }
                     else
                     {
-                        report.Images = new(); // Para evitar null no front
+                        report.Images = new(); 
                     }
                 }
             }
