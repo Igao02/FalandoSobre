@@ -1,10 +1,8 @@
-﻿@page "/Profile/Edit"
-@* @using FalandoSobre.Web.Components.Account.Shared *@
+﻿@page "/account-edit"
 @inherits EditProfilePage
 @rendermode InteractiveServer
 
 <MudPopoverProvider />
-@* <StatusMessage /> *@
 
 <PageTitle>Perfil</PageTitle>
 
@@ -29,6 +27,5 @@
             </MudButton>
         </MudItem>
     </MudGrid>
-    <MudText Typo="Typo.subtitle1">Valor digitado: @Model.PhoneNumber</MudText>
 </EditForm>
 
