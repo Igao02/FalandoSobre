@@ -18,5 +18,5 @@ public class ApplicationUser : IdentityUser
 
     public List<Image> Images { get; set; } = new List<Image>();
 
-    public string PerfilImageUrl { get; set; } = string.Empty;
+    public List<UserInfo> UserInfos { get; set; } = new List<UserInfo>();
 }

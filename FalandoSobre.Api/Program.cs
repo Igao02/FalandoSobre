@@ -72,7 +72,7 @@ builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<ILogRepository, LogRepository>();
 builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
-
+builder.Services.AddTransient<IUserInfoRepository, UserInfoRepository>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSenderService>();
 
 // Configuração de Swagger e API

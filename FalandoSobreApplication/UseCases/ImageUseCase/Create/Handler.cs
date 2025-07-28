@@ -54,7 +54,7 @@ public sealed class CreateImageHandler : ICommandHandler<CreateImageCommand, Cre
             var filePath = Path.Combine(uploadFolder, fileName); 
 
             await File.WriteAllBytesAsync(filePath, request.ConteudoArquivo, cancellationToken);
-            
+
             var imageUrl = "https://localhost:7249/ReportImages/Uploads/" + fileName;
 
             var image = new Image(

@@ -10,17 +10,6 @@ namespace FalandoSobre.Web.Components.Pages.CreateReport;
 
 public class CreateReportPage : ComponentBase
 {
-    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
-
-    [Inject] protected NavigationManager? Navi { get; set; }
-
-    [Inject] public IReportRepository? ReportRepository { get; set; } = null!;
-
-    [Inject] public IImageRepository? ImageRepository { get; set; } = null!;
-
-    protected Report Model { get; set; } = new();
-
-    protected Image ImageModel { get; set; } = new();
 
     protected string successMessage = string.Empty;
     protected string errorMessage = string.Empty;
@@ -28,9 +17,15 @@ public class CreateReportPage : ComponentBase
     protected List<string> imagePreviewUrls = new List<string>();
     protected bool isLoading = false;
 
-    [Inject]
-    public required ILogger<CreateReportPage> Logger { get; set; }
 
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
+    [Inject] protected NavigationManager? Navi { get; set; }
+    [Inject] public IReportRepository? ReportRepository { get; set; } = null!;
+    [Inject] public IImageRepository? ImageRepository { get; set; } = null!;
+    [Inject] public required ILogger<CreateReportPage> Logger { get; set; }
+
+    protected Report Model { get; set; } = new();
+    protected Image ImageModel { get; set; } = new();
 
     protected async Task CreateReport()
     {

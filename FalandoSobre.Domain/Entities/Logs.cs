@@ -9,11 +9,11 @@ public  class Logs : Entity
         //ORM Purpose
     }
 
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
 
-    public string Action { get; set; }
+    public string? Action { get; set; }
     
-    public string EntityType { get; set; }
+    public string? EntityType { get; set; }
 
     public DateTime Created_At { get; set; }
 
