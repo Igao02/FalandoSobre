@@ -4,16 +4,10 @@ using FalandoSobreApplication.UseCases.InstitutionUseCase.Create;
 
 namespace FalandoSobre.Web.Handlers;
 
-public class InstitutionHandler : IInstitutionRepository
+public class InstitutionHandler(IHttpClientFactory httpClientFactory, ILogger<InstitutionHandler> logger) 
+    : IInstitutionRepository
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<InstitutionHandler> _logger;
-
-    public InstitutionHandler(IHttpClientFactory httpClientFactory, ILogger<InstitutionHandler> logger)
-    {
-        _httpClient = httpClientFactory.CreateClient("ApiClient");
-        _logger = logger;
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("ApiClient");
 
     public async Task<Institution> AddAsync(Institution institution)
     {
@@ -42,13 +36,13 @@ public class InstitutionHandler : IInstitutionRepository
             {
                 Id = createdResponse.Id
             };
-            _logger.LogInformation("Instituição criada com sucesso: {Institution}", createdInstitution);
+            logger.LogInformation("Instituição criada com sucesso: {Institution}", createdInstitution);
             return createdInstitution;
-        } 
+        }
         else
         {
             var error = await response.Content.ReadAsStringAsync();
-            _logger.LogError("Erro ao criar a instituição: {Error}", error);
+            logger.LogError("Erro ao criar a instituição: {Error}", error);
             throw new ApplicationException($"Erro ao criar a instituição: {error}");
         }
     }

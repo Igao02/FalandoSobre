@@ -45,7 +45,7 @@
 
                             <MudGrid Spacing="3">
                                 <MudItem xs="12">
-                                    <MudStaticTextField For="@(() => Input.Email)" @bind-Value="Input.Email"
+                                    <MudStaticTextField For="@(() => Input.UserName)" @bind-Value="Input.UserName"
                                                         Label="E-mail"
                                                         Placeholder="seu@email.com"
                                                         Required="true"
@@ -131,7 +131,7 @@
 
     public async Task LoginUser()
     {
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
@@ -156,9 +156,9 @@
 
     private sealed class InputModel
     {
-        [Required(ErrorMessage = "E-mail é obrigatório")]
-        [EmailAddress(ErrorMessage = "Por favor, insira um e-mail válido")]
-        public string Email { get; set; } = "";
+        [Required(ErrorMessage = "Campo Necessário")]
+        [DataType(DataType.Text)]
+        public string UserName { get; set; } = "";
 
         [Required(ErrorMessage = "Senha é obrigatória")]
         [DataType(DataType.Password)]

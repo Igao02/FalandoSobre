@@ -2,30 +2,129 @@
 @inherits EditProfilePage
 @rendermode InteractiveServer
 
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 <MudPopoverProvider />
 
-<PageTitle>Perfil</PageTitle>
+<PageTitle>Editar Perfil</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Perfil</MudText>
+<MudImage Src="/Images/Fundo_OFC.png"
+          Style="position: fixed;
+                 top: 0; left: 0;
+                 width: 100%; height: 100%;
+                 background-position: center;
+                 background: no-repeat;
+                 background-size: cover;
+                 z-index: -1;" />
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmitAsync" FormName="profile">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<MudContainer MaxWidth="MaxWidth.Medium" Class="my-8">
+    <MudPaper Class="pa-8" Elevation="5" Style="border-radius: 12px;">
+        <MudGrid Class="mb-6">
+            <MudItem xs="12">
+                <div class="d-flex align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" Color="Color.Primary" Class="mr-3" />
+                    <MudText Typo="Typo.h4" Class="text-primary">Editar Perfil</MudText>
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-2">
+                    Atualize suas informações pessoais
+                </MudText>
+                <MudDivider Class="my-4" />
+            </MudItem>
+        </MudGrid>
 
-    <MudGrid>
-        <MudItem md="12">
-            <MudTextField Value="@username" Label="Nome de usuário" Disabled="true" />
-        </MudItem>
-        <MudItem md="12">
-            <MudTextField @bind-Value="Model.PhoneNumber"
-                          Label="Número de telefone"
-                          HelperText="Por favor, insira seu número de telefone." />
-        </MudItem>
-        <MudItem md="12">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" ButtonType="ButtonType.Submit">
-                Salvar
-            </MudButton>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+        @if (!isEmailConfirmed)
+        {
+            <MudAlert Severity="Severity.Warning" Class="mb-6" Variant="Variant.Outlined">
+                <MudAlert>Email não confirmado</MudAlert>
+                Seu email ainda não foi confirmado.
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Primary"
+                           OnClick="OnSendEmailVerificationAsync"
+                           Disabled="@isLoading"
+                           Class="ml-2"
+                           EndIcon="@Icons.Material.Filled.Send">
+                    Enviar email de verificação
+                </MudButton>
+            </MudAlert>
+        }
 
+        <EditForm Model="@Model" OnValidSubmit="OnValidSubmitAsync" FormName="profile">
+            <DataAnnotationsValidator />
+            <ValidationSummary Class="mb-4" />
+
+            <MudGrid Spacing="4">
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Model.UserName"
+                                  For="@(() => Model.UserName)"
+                                  Label="Apelido"
+                                  Variant="Variant.Outlined"
+                                  Icon="@Icons.Material.Filled.Tag"
+                                  HelperText="3 a 20 caracteres (letras, números, hífens)"
+                                  Class="mb-4"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Model.PhoneNumber"
+                                  For="@(() => Model.PhoneNumber)"
+                                  Label="Telefone"
+                                  Variant="Variant.Outlined"
+                                  Icon="@Icons.Material.Filled.Phone"
+                                  HelperText="Formato: (00) 00000-0000"
+                                  Class="mb-4"
+                                  InputMask="(00) 00000-0000"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.NewEmail"
+                                  For="@(() => Model.NewEmail)"
+                                  Label="Email"
+                                  Variant="Variant.Outlined"
+                                  Icon="@Icons.Material.Filled.Email"
+                                  HelperText="Seu endereço de email principal"
+                                  Class="mb-4"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">Foto de Perfil</MudText>
+                    <InputFile OnChange="HandleSelectedFiles" accept="image/*" />
+                    @if (imagePreviewUrls.Count > 0)
+                    {
+                        <img src="@imagePreviewUrls[0]" alt="Pré-visualização" style="max-width: 150px; max-height: 150px; margin-top: 10px;" />
+                    }
+                </MudItem>
+
+                <MudItem xs="12" Class="mt-6">
+                    <div class="d-flex justify-space-between align-center">
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Secondary"
+                                   Href="/"
+                                   StartIcon="@Icons.Material.Filled.ArrowBack">
+                            Voltar
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   ButtonType="ButtonType.Submit"
+                                   EndIcon="@Icons.Material.Filled.Save"
+                                   Disabled="@isLoading"
+                                   Class="px-6">
+                            @if (isLoading)
+                            {
+                                <MudProgressCircular Size="Size.Small" Color="Color.Info" Class="mr-2" />
+                                <span>Salvando...</span>
+                            }
+                            else
+                            {
+                                <span>Salvar Alterações</span>
+                            }
+                        </MudButton>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudPaper>
+</MudContainer>

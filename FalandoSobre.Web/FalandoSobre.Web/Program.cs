@@ -43,6 +43,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
 builder.Services.AddTransient<IReportRepository, ReportHandler>();
 builder.Services.AddTransient<IImageRepository, ImageHandler>();
 builder.Services.AddTransient<IInstitutionRepository, InstitutionHandler>();
+builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
 
 builder.Services.AddAuthentication(options =>
     {

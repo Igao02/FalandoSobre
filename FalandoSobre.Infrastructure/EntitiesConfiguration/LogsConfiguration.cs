@@ -16,15 +16,15 @@ public class LogsConfiguration
 
         builder
             .Property(l => l.UserName)
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(l => l.Action)
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(l => l.EntityType)
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(l => l.ApplicationUserId)
