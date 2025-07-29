@@ -10,19 +10,16 @@ public class HomePage : ComponentBase
 {
     [Inject] public IReportRepository? ReportRepository { get; set; } = null!;
     [Inject] public IImageRepository? ImageRepository { get; set; } = null!;
-    [Inject] public NavigationManager? Navi { get; set; } = null!;
-    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
 
     protected List<Report> Model { get; set; } = new();
-    private List<Image> Images { get; set; } = new();
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
 
-    private string successMessage = string.Empty;
-    private string errorMessage = string.Empty;
-    private bool isLoading = false;
+    public string successMessage = string.Empty;
+    public string errorMessage = string.Empty;
+    public bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {

@@ -90,11 +90,40 @@
 
                 <MudItem xs="12" md="6">
                     <MudText Typo="Typo.subtitle2" Class="mb-2">Foto de Perfil</MudText>
-                    <InputFile OnChange="HandleSelectedFiles" accept="image/*" />
-                    @if (imagePreviewUrls.Count > 0)
-                    {
-                        <img src="@imagePreviewUrls[0]" alt="Pré-visualização" style="max-width: 150px; max-height: 150px; margin-top: 10px;" />
-                    }
+
+                    <MudPaper Elevation="1" Class="pa-4" Style="border: 2px dashed var(--mud-palette-primary); border-radius: 8px;">
+                        <div class="d-flex flex-column align-center">
+                            @if (imagePreviewUrls.Count > 0)
+                            {
+                                <img src="@imagePreviewUrls[0]"
+                                     alt="Pré-visualização"
+                                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin-bottom: 16px;" />
+                            }
+                            else
+                            {
+                                <MudAvatar Size="Size.Medium" Color="Color.Primary" Style="margin-bottom: 16px;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
+                                </MudAvatar>
+                            }
+
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.AddPhotoAlternate"
+                                       Class="mb-2">
+                                <InputFile OnChange="HandleSelectedFiles"
+                                           accept="image/*"
+                                           hidden
+                                           id="fileInput" />
+                                <label for="fileInput" style="cursor: pointer;">
+                                    @(imagePreviewUrls.Count > 0 ? "Alterar Foto" : "Selecionar Foto")
+                                </label>
+                            </MudButton>
+
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                Formatos: JPG, PNG (Max. 5MB)
+                            </MudText>
+                        </div>
+                    </MudPaper>
                 </MudItem>
 
                 <MudItem xs="12" Class="mt-6">

@@ -34,14 +34,13 @@ public partial class EditProfilePage : ComponentBase
     [Inject] IdentityUserAccessor UserAccessor { get; set; } = default!;
     [Inject] protected UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] protected SignInManager<ApplicationUser> SignInManager { get; set; } = default!;
-    [Inject] IdentityRedirectManager RedirectManager { get; set; } = default!;
     [Inject] protected IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
     [Inject] protected IEmailSender<ApplicationUser> EmailSender { get; set; } = default!;
     [Inject] protected ISnackbar Snackbar { get; set; } = default!;
     [Inject] protected IUserInfoRepository? UserInfoRepository { get; set; } = null!;
-    [Inject] protected ILogger<EditProfilePage> Logger { get; set; }
+    [Inject] protected ILogger<EditProfilePage>? Logger { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,53 +120,26 @@ public partial class EditProfilePage : ComponentBase
 
             }
 
-            if (Model.ProfilePhoto != profilePhoto && selectedFiles.Count > 0)
+            if (selectedFiles.Count > 0)
             {
-                //IGAAAOOO CRIA A COLUNA PARA SALVAR OS BYTES DO ARQUYIVOOOOOO
-                Logger.LogInformation("Iniciando o upload da imagem de perfil...");
-                var maxFileSize = 10 * 1024 * 1024;
-                var bufferSize = 8192;
-                var stopwatch = Stopwatch.StartNew();
-
                 var file = selectedFiles[0];
-                var uploadsFolder = Path.Combine(Environment.CurrentDirectory, "wwwroot", "ReportImages", "uploads");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var filePath = Path.Combine(uploadsFolder, Model.ProfilePhoto);
-
+                var maxFileSize = 10 * 1024 * 1024;
                 using var stream = file.OpenReadStream(maxAllowedSize: maxFileSize);
                 using var memoryStream = new MemoryStream();
-                var buffer = new byte[bufferSize];
-                int bytesRead;
-
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    memoryStream.Write(buffer, 0, bytesRead);
-                }
-
+                await stream.CopyToAsync(memoryStream);
                 var fileBytes = memoryStream.ToArray();
 
-                var fileExtension = Path.GetExtension(file.Name);
-                var fileName = $"{file.Name}";
-
-                Model.ProfilePhoto = $"/uploads/{Model.ProfilePhoto}";
-
-                // Crie e salve o UserInfo
-                var newUserInfo = new UserInfo
+                await UserInfoRepository!.AddAsync(new UserInfo
                 {
-                    CreatedAt = DateTime.Now,
-                    Actived = true,
                     ApplicationUserId = user.Id,
-                    ProfilePhoto = Model.ProfilePhoto,
-                    ProfilePhotoBytes = fileBytes,
-                };
+                    ProfilePhotoBytes = fileBytes
+                });
 
-                await UserInfoRepository!.AddAsync(newUserInfo);
-                Logger.LogInformation($"Imagem {file.Name} enviada e UserInfo criado com sucesso.");
+                Snackbar.Add("Imagem de perfil enviada com sucesso!", Severity.Success);
+                await Task.Delay(2500);
             }
 
-
-            if (Model.UserName != username || Model.PhoneNumber != phoneNumber)
+            if (Model.UserName != username || Model.PhoneNumber != phoneNumber || Model.ProfilePhoto != profilePhoto)
             {
                 await JSRuntime.InvokeVoidAsync("window.location.reload");
             }
@@ -225,13 +197,13 @@ public partial class EditProfilePage : ComponentBase
 
         try
         {
-            Logger.LogInformation("Selecionando arquivos...");
+            Logger?.LogInformation("Selecionando arquivos...");
 
             foreach (var file in e.GetMultipleFiles())
             {
                 if (file.Size > MaxFileSize)
                 {
-                    Logger.LogInformation($"O arquivo {file.Name} excede o tamanho permitido de 10 MB.");
+                    Logger?.LogInformation($"O arquivo {file.Name} excede o tamanho permitido de 10 MB.");
                     continue;
                 }
 
@@ -256,16 +228,14 @@ public partial class EditProfilePage : ComponentBase
                 break; // Só aceita uma imagem
             }
 
-            Logger.LogInformation("Arquivos processados com sucesso.");
+            Logger?.LogInformation("Arquivos processados com sucesso.");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Logger.LogInformation($"Erro ao selecionar arquivos: {ex.Message}");
+            Logger?.LogInformation($"Erro ao selecionar arquivos: {ex.Message}");
         }
     }
-
-
 
     public class InputModel
     {
