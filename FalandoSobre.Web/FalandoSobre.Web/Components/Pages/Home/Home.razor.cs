@@ -10,8 +10,10 @@ public class HomePage : ComponentBase
 {
     [Inject] public IReportRepository? ReportRepository { get; set; } = null!;
     [Inject] public IImageRepository? ImageRepository { get; set; } = null!;
+    [Inject] public IUserInfoRepository? UserInfoRepository { get; set; } = null!;
 
     protected List<Report> Model { get; set; } = new();
+    protected List<UserInfo> ModelUserInfo { get; set; } = new();
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
@@ -83,6 +85,35 @@ public class HomePage : ComponentBase
         catch (Exception ex)
         {
             errorMessage = $"Erro ao carregar os dados: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected async Task GetProfilePhotos()
+    {
+        isLoading = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var userInfos = await UserInfoRepository!.GetAllAsync();
+            foreach (var userInfo in ModelUserInfo)
+            {
+                if (userInfo?.ProfilePhoto is not null)
+                {
+                    var imageResult = await UserInfoRepository.GetImageByUserId(userInfo.ApplicationUserId);
+                    userInfo.ProfilePhoto = imageResult?.ProfilePhoto ?? string.Empty;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar as fotos de perfil: {ex.Message}";
         }
         finally
         {
