@@ -2,7 +2,6 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace FalandoSobre.Web.Components.Pages.Home;
 
@@ -26,6 +25,7 @@ public class HomePage : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await LoadReportsAsync();
+        await GetProfilePhotos();
     }
 
     protected async Task OnPageChanged(int page)
@@ -77,7 +77,7 @@ public class HomePage : ComponentBase
                     }
                     else
                     {
-                        report.Images = new(); 
+                        report.Images = new();
                     }
                 }
             }
@@ -101,13 +101,33 @@ public class HomePage : ComponentBase
 
         try
         {
-            var userInfos = await UserInfoRepository!.GetAllAsync();
-            foreach (var userInfo in ModelUserInfo)
+
+            foreach (var publications in Model)
             {
-                if (userInfo?.ProfilePhoto is not null)
+                Console.WriteLine($"Buscando foto de perfil para o usuário: {publications.ApplicationUserId}");
+                var imageResult = await UserInfoRepository!.GetImageByUserId(publications.ApplicationUserId);
+                if (imageResult is not null)
                 {
-                    var imageResult = await UserInfoRepository.GetImageByUserId(userInfo.ApplicationUserId);
-                    userInfo.ProfilePhoto = imageResult?.ProfilePhoto ?? string.Empty;
+                    var userInfo = new UserInfo
+                    {
+                        Id = imageResult.Id,
+                        ProfilePhoto = imageResult.ProfilePhoto,
+                        ApplicationUserId = imageResult.ApplicationUserId,
+                        CreatedAt = imageResult.CreatedAt
+                    };
+                    ModelUserInfo.Add(userInfo);
+                    Console.WriteLine($"Usuário {publications.ApplicationUserId} - Foto de perfil: {imageResult.ProfilePhoto}");
+                }
+                else
+                {
+                    ModelUserInfo.Add(new UserInfo
+                    {
+                        Id = Guid.Empty,
+                        ProfilePhoto = string.Empty,
+                        ApplicationUserId = publications.ApplicationUserId,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                    Console.WriteLine($"Usuário {publications.ApplicationUserId} - Foto de perfil não encontrada.");
                 }
             }
         }
@@ -121,4 +141,14 @@ public class HomePage : ComponentBase
             StateHasChanged();
         }
     }
+
+    protected string? GetProfilePhoto(string userId)
+    {
+        var teste = ModelUserInfo.FirstOrDefault(u => u.ApplicationUserId == userId)?.ProfilePhoto;
+
+        Console.WriteLine($"Buscando foto de perfil para o usuário: {userId} - Resultado: {teste}");
+
+        return teste;
+    }
+
 }

@@ -39,7 +39,7 @@ public sealed class CreateUserInfoHandler : ICommandHandler<CreateUserInfoComman
             var filePath = Path.Combine(uploadFolder, fileName);
 
             await File.WriteAllBytesAsync(filePath, request.ProfilePhotoBytes, cancellationToken);
-            var profilePhotoUrl = $"https://localhost:7249/ProfilePhotos/Uploads/{fileName}";
+            var profilePhotoUrl = $"https://localhost:7249/ProfilesPhotos/Uploads/{fileName}";
 
             var userInfo = new UserInfo
             {

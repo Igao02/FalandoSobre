@@ -30,15 +30,18 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task<UserInfo?> GetImageByUserId(string userId)
     {
-       return await _context.UserInfos
-            .Where(u => u.ApplicationUserId == userId)
-            .Select(u => new UserInfo
-            {
-                Id = u.Id,
-                ProfilePhoto = u.ProfilePhoto,
-                ApplicationUserId = u.ApplicationUserId
-            })
-            .FirstOrDefaultAsync();
+        return await _context.UserInfos
+        .Where(u => u.ApplicationUserId == userId)
+        .Select(u => new UserInfo
+        {
+            Id = u.Id,
+            ProfilePhoto = u.ProfilePhoto,
+            ApplicationUserId = u.ApplicationUserId,
+            CreatedAt = u.CreatedAt
+        })
+        .OrderByDescending(u => u.CreatedAt)
+        .FirstOrDefaultAsync();
+
     }
 
     public async Task<UserInfo> Save(UserInfo userInfo)
