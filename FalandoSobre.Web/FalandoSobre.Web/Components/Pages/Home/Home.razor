@@ -12,58 +12,124 @@
                  background-position: center;
                  background: no-repeat;
                  background-size: cover;
-                 z-index: -1;" />
+                 z-index: -1;
+                 filter: brightness(0.7);" />
 
-<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="margin-top: 1rem;">
-    <MudItem xs="12" sm="10" md="8" lg="6">
-        <MudPaper Elevation="10" Style="background-color: rgba(255,255,255,0.98); border-radius: 16px; width: 100%; margin: auto; padding: 16px;">
-            <MudStack Gap="16px">
-                @foreach (var report in Model)
-                {
-                    <MudCard Style="margin-bottom: 16px;">
-                        <MudCardHeader>
-                            <MudText Typo="Typo.h6" Style="font-weight: 600;">@report.ReportName</MudText>
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                Postado por: @report.UserName
-                            </MudText>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">@report.ReportDescription</MudText>
-                            
-                            @if (report.Images != null && report.Images.Any())
-                            {
-                                <MudGrid Style="margin-top: 16px; gap: 8px;">
-                                    @foreach (var image in report.Images)
-                                    {
-                                        <MudItem xs="12" sm="@(report.Images.Count > 1 ? 6 : 12)" md="@(report.Images.Count > 2 ? 4 : (report.Images.Count > 1 ? 6 : 12))">
-                                            <MudImage Src="@image.ImageUrl" 
-                                                    Class="post-image"
-                                                    Style="width: 100%; height: auto; max-height: 400px; object-fit: contain; border-radius: 8px; border: 1px solid #e0e0e0;"/>
-                                        </MudItem>
-                                    }
-                                </MudGrid>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic; margin-top: 8px;">
+<MudContainer MaxWidth="MaxWidth.Medium" Style="margin-top: 2rem; margin-bottom: 2rem;">
+    <MudPaper Elevation="25" Style="background-color: rgba(255,255,255,0.98);
+                                   border-radius: 24px;
+                                   width: 100%;
+                                   padding: 24px;
+                                   box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <MudStack Gap="24px">
+            @foreach (var report in Model)
+            {
+                <MudCard Style="margin-bottom: 24px; border-radius: 16px; overflow: hidden;
+                                  transition: transform 0.3s ease, box-shadow 0.3s ease;
+                                  &:hover {
+                                      transform: translateY(-5px);
+                                      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                                  }">
+                    <MudCardHeader>
+                        <MudGrid Spacing="2">
+                            <MudItem xs="2" style="display: flex; justify-content: center;">
+                                <MudAvatar Size="Size.Large"
+                                           Alt="Foto de Perfil"
+                                           Style="width: 56px; height: 56px; border: 3px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <MudImage Src="@GetProfilePhoto(report.ApplicationUserId.ToString())" Alt="Foto de Perfil" />
+                                </MudAvatar>
+
+                            </MudItem>
+                            <MudItem xs="10">
+                                <MudStack>
+                                    <MudText Typo="Typo.h6" Style="font-weight: 600; margin-bottom: -4px;">@report.ReportName</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        Postado por <span style="font-weight: 500; color: #5D5FEF;">@report.UserName</span>
+                                    </MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" />
+                                        @DateTime.Now.ToString("dd MMM yyyy - HH:mm")
+                                    </MudText>
+                                </MudStack>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardHeader>
+
+                    <MudCardContent Style="padding-top: 0;">
+                        <MudText Typo="Typo.body1" Style="line-height: 1.6; margin-bottom: 16px;">@report.ReportDescription</MudText>
+
+                        @if (report.Images != null && report.Images.Any())
+                        {
+                            <MudGrid Style="margin-top: 16px; gap: 12px;">
+                                @foreach (var image in report.Images)
+                                {
+                                    <MudItem xs="12" sm="@(report.Images.Count > 1 ? 6 : 12)" md="@(report.Images.Count > 2 ? 4 : (report.Images.Count > 1 ? 6 : 12))">
+                                        <MudImage Src="@image.ImageUrl"
+                                                  Class="post-image"
+                                                  Style="width: 100%; height: auto;
+                                                                   max-height: 400px;
+                                                                   object-fit: cover;
+                                                                   border-radius: 12px;
+                                                                   cursor: pointer;
+                                                                   transition: transform 0.3s ease;
+                                                                   &:hover {
+                                                                       transform: scale(1.02);
+                                                                   }" />
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                        else
+                        {
+                            <MudPaper Elevation="0" Style="background-color: #f5f5f5;
+                                                                border-radius: 12px;
+                                                                height: 150px;
+                                                                display: flex;
+                                                                align-items: center;
+                                                                justify-content: center;
+                                                                margin-top: 16px;">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic;">
+                                    <MudIcon Icon="@Icons.Material.Filled.PhotoCamera" Size="Size.Medium" />
                                     Nenhuma imagem disponível
                                 </MudText>
-                            }
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.ThumbUp" Color="Color.Default" Size="Size.Small"/>
-                            <MudIconButton Icon="@Icons.Material.Filled.Comment" Color="Color.Default" Size="Size.Small"/>
-                            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" Size="Size.Small"/>
-                        </MudCardActions>
-                    </MudCard>
-                }
+                            </MudPaper>
+                        }
+                    </MudCardContent>
+
+                    <MudCardActions Style="border-top: 1px solid #f0f0f0; padding: 12px 16px;">
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Default"
+                                   StartIcon="@Icons.Material.Filled.ThumbUp"
+                                   Size="Size.Small"
+                                   Style="text-transform: none;">
+                            Curtir
+                        </MudButton>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Default"
+                                   StartIcon="@Icons.Material.Filled.Comment"
+                                   Size="Size.Small"
+                                   Style="text-transform: none;">
+                            Comentar
+                        </MudButton>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Default"
+                                   StartIcon="@Icons.Material.Filled.Share"
+                                   Size="Size.Small"
+                                   Style="text-transform: none;">
+                            Compartilhar
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            }
+
+            <MudPaper Elevation="0" Style="background-color: transparent; padding: 16px 0;">
                 <MudPagination Color="Color.Primary"
                                SelectedPage="CurrentPage"
                                SelectedChanged="OnPageChanged"
                                Count="TotalPages"
                                Size="Size.Small"
                                Class="mt-4" />
-            </MudStack>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+            </MudPaper>
+        </MudStack>
+    </MudPaper>
+</MudContainer>

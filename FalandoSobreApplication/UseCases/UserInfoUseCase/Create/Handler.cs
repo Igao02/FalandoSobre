@@ -32,14 +32,14 @@ public sealed class CreateUserInfoHandler : ICommandHandler<CreateUserInfoComman
 
         try
         {
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ReportImages", "Uploads");
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProfilesPhotos", "Uploads");
             Directory.CreateDirectory(uploadFolder);
 
             var fileName = $"{Guid.NewGuid()}.png";
             var filePath = Path.Combine(uploadFolder, fileName);
 
             await File.WriteAllBytesAsync(filePath, request.ProfilePhotoBytes, cancellationToken);
-            var profilePhotoUrl = $"https://localhost:7249/ReportImages/Uploads/{fileName}";
+            var profilePhotoUrl = $"https://localhost:7249/ProfilesPhotos/Uploads/{fileName}";
 
             var userInfo = new UserInfo
             {
@@ -47,7 +47,7 @@ public sealed class CreateUserInfoHandler : ICommandHandler<CreateUserInfoComman
                 ProfilePhoto = profilePhotoUrl,
                 ApplicationUserId = request.ApplicationUserId,
                 CreatedAt = DateTime.UtcNow,
-                ProfilePhotoBytes = request.ProfilePhotoBytes,
+                ProfilePhotoBytes = null,
             };
 
             var createdUserInfo = await _userInfoRepository.AddAsync(userInfo);
