@@ -8,5 +8,5 @@ public interface IImageRepository
     Task DeleteImageAsync(Guid id);
     Task <Image?> GetImageAsync(Guid id);
     Task<IEnumerable<Image>> GetListAsync();
-    Task<(Guid Id, string ImageUrl, Guid? ReportId)?> GetImageByReportId(Guid id);
+    Task<IEnumerable<(Guid Id, string ImageUrl, Guid? ReportId)>> GetImageByReportId(Guid id);
 }

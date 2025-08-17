@@ -2,4 +2,5 @@
 
 namespace FalandoSobreApplication.UseCases.ImageUseCase.ListByReportId;
 
-public sealed record ImageListByReportIdCommand(Guid Id) : ICommand<ImageListByReportIdResponse>;
+public sealed record ImageListByReportIdCommand(Guid Id)
+    : ICommand<List<ImageListByReportIdResponse>>;

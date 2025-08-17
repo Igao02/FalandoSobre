@@ -35,17 +35,15 @@ namespace FalandoSobre.Infrastructure.Repositories
 
         public async Task<Image?> GetImageAsync(Guid id) => await context.Images.FindAsync(id);
         public async Task<IEnumerable<Image>> GetListAsync() => await context.Images.ToListAsync();
-        public async Task<(Guid Id, string ImageUrl, Guid? ReportId)?> GetImageByReportId(Guid id)
-        {
-            return await context.Images
-                .Where(i => i.ReportId == id)
-                .Select(i => new ValueTuple<Guid, string, Guid?>(
-                    i.Id,
-                    i.ImageUrl,
-                    i.ReportId
-                ))
-                .FirstOrDefaultAsync();
-        }
 
+        public async Task<IEnumerable<(Guid Id, string ImageUrl, Guid? ReportId)>> GetImageByReportId(Guid id)
+        {
+            var images = await context.Images
+                .Where(i => i.ReportId == id)
+                .Select(i => new ValueTuple<Guid, string, Guid?>(i.Id, i.ImageUrl, i.ReportId))
+                .ToListAsync();
+
+            return images;
+        }
     }
 }
