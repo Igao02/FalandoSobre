@@ -3,6 +3,8 @@ using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
 using FalandoSobre.Web.Handlers;
+using FalandoSobreApplication.Interfaces;
+using FalandoSobreApplication.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +46,7 @@ builder.Services.AddTransient<IReportRepository, ReportHandler>();
 builder.Services.AddTransient<IImageRepository, ImageHandler>();
 builder.Services.AddTransient<IInstitutionRepository, InstitutionHandler>();
 builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
+builder.Services.AddTransient<IReportAppService, ReportAppService>();
 
 builder.Services.AddAuthentication(options =>
     {

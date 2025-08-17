@@ -14,7 +14,7 @@ public sealed class ListByReportId : IEndpoint
             {
                 var command = new ImageListByReportIdCommand(id);
 
-                Result<ImageListByReportIdResponse> result = await sender.Send(command, cancellationToken);
+                Result<List<ImageListByReportIdResponse>> result = await sender.Send(command, cancellationToken);
                 return result.Match(value => Results.Ok(value), CustomResults.SimpleError);
             })
             .WithName("ImageListByReportId")

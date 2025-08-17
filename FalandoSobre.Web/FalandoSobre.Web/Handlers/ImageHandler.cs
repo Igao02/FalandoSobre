@@ -55,26 +55,30 @@ public class ImageHandler(IHttpClientFactory httpClientFactory, ILogger<ReportHa
         throw new NotImplementedException();
     }
 
-    public async Task<(Guid Id, string ImageUrl, Guid? ReportId)?> GetImageByReportId(Guid id)
+    public async Task<IEnumerable<(Guid Id, string ImageUrl, Guid? ReportId)>> GetImageByReportId(Guid id)
     {
         var url = $"/images/reports/?id={id}";
         var response = await _httpClient.GetAsync(url);
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        if (jsonResponse != null)
+
+        if (!string.IsNullOrWhiteSpace(jsonResponse))
         {
-            logger.LogInformation("Imagem recebida com sucesso: {jsonResponse}", jsonResponse);
+            logger.LogInformation("Resposta recebida: {jsonResponse}", jsonResponse);
         }
 
-        if (!response.IsSuccessStatusCode) return null;
-        var imageResponse = await response.Content.ReadFromJsonAsync<ImageListByReportIdResponse>();
+        if (!response.IsSuccessStatusCode)
+            return Enumerable.Empty<(Guid, string, Guid?)>();
 
-        if (imageResponse is null)
-            return null;
+        var imageResponses = await response.Content.ReadFromJsonAsync<List<ImageListByReportIdResponse>>();
 
-        return (
-            imageResponse.Id,
-            imageResponse.ImageUrl!,
-            imageResponse.ReportId
-        );
+        if (imageResponses is null || !imageResponses.Any())
+            return Enumerable.Empty<(Guid, string, Guid?)>();
+
+        return imageResponses.Select(img => (
+            (Guid Id, string ImageUrl, Guid? ReportId))((
+                img.Id,
+                img.ImageUrl ?? string.Empty,
+                img.ReportId
+            )));
     }
 }
