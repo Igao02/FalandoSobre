@@ -1,0 +1,229 @@
+# ==============================================
+# PASSO A PASSO - CONFIGURAÇÃO COMPLETA DO PROJETO
+# ==============================================
+
+Este documento detalha TODAS as configurações e correções feitas no projeto FalandoSobre
+para resolver os problemas de conexão entre Front-end, API e Banco de Dados.
+
+# ==============================================
+# PROBLEMA INICIAL
+# ==============================================
+
+❌ ERRO: "Failed to bind to address https://[::1]:7249: address already in use"
+❌ CAUSA: Docker (front-end) e API (local) tentando usar a mesma porta 7249
+❌ RESULTADO: API não conseguia iniciar
+
+# ==============================================
+# PASSO 1: IDENTIFICAR O CONFLITO DE PORTAS
+# ==============================================
+
+## 1.1 Verificar quais processos usavam a porta 7249:
+```bash
+netstat -ano | findstr :7249
+tasklist | findstr "PID_ENCONTRADO"
+```
+
+## 1.2 Resultado encontrado:
+- Docker (webapp_container) estava usando porta 7249
+- API tentava usar a mesma porta 7249
+- Conflito impedia a API de iniciar
+
+# ==============================================
+# PASSO 2: RESOLVER CONFLITO DE PORTAS
+# ==============================================
+
+## 2.1 Alterar porta do Docker no docker-compose.yml:
+```yaml
+# ANTES:
+ports:
+  - "7249:8080"
+
+# DEPOIS:
+ports:
+  - "7248:8080"
+```
+
+## 2.2 Manter API na porta original:
+- API continua na porta 7249 (conforme launchSettings.json)
+- Separação clara: Docker=7248, API=7249
+
+## 2.3 Reiniciar containers:
+```bash
+cd /c/Users/Igao/FalandoSobre/src
+docker-compose down
+docker-compose up -d
+```
+
+# ==============================================
+# PASSO 3: RESOLVER CONEXÃO COM BANCO DE DADOS
+# ==============================================
+
+## 3.1 Problema identificado:
+❌ Connection string original: "Server=db;..."
+❌ Hostname "db" só funciona DENTRO da rede Docker
+❌ API rodando LOCAL não consegue resolver hostname "db"
+
+## 3.2 Solução - Configuração dupla:
+
+### 3.2.1 Para desenvolvimento local (appsettings.Development.json):
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost,14333;Database=master;User Id=sa;Password=SqlServer123!;TrustServerCertificate=true;"
+  }
+}
+```
+
+### 3.2.2 Para produção/Docker (appsettings.json):
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=tcp:localhost,14333;Initial Catalog=master;User ID=sa;Password=SqlServer123!;TrustServerCertificate=true;Encrypt=false;Connection Timeout=30;"
+  }
+}
+```
+
+## 3.3 Explicação dos parâmetros:
+- Data Source=tcp:localhost,14333 → Força TCP/IP, evita erro Named Pipes
+- Initial Catalog=master → Banco de dados inicial
+- User ID=sa → Usuário administrador
+- Password=SqlServer123! → Senha definida no Docker
+- TrustServerCertificate=true → Aceita certificado auto-assinado
+- Encrypt=false → Desabilita criptografia (desenvolvimento)
+- Connection Timeout=30 → Tempo limite de 30 segundos
+
+# ==============================================
+# PASSO 4: APLICAR MIGRATIONS
+# ==============================================
+
+## 4.1 Problema inicial:
+❌ Migrations falhavam porque API tentava conectar com "Server=db"
+
+## 4.2 Solução:
+```bash
+# Com environment Development (usa localhost):
+ASPNETCORE_ENVIRONMENT=Development dotnet ef database update --project ../FalandoSobre.Infrastructure --startup-project .
+```
+
+## 4.3 Resultado:
+✅ Migrations aplicadas com sucesso
+✅ Banco estruturado corretamente
+
+# ==============================================
+# PASSO 5: RESOLVER PROBLEMAS DE SSL
+# ==============================================
+
+## 5.1 Problema:
+❌ Front-end não conseguia conectar na API via HTTPS
+❌ Erro: "The SSL connection could not be established"
+❌ Certificado de desenvolvimento não confiável
+
+## 5.2 Solução:
+```bash
+dotnet dev-certs https --trust
+```
+
+## 5.3 Resultado:
+✅ Certificado HTTPS de desenvolvimento agora é confiável
+✅ Front-end consegue se comunicar com API via HTTPS
+
+# ==============================================
+# PASSO 6: RESOLVER PROBLEMAS DE BUILD
+# ==============================================
+
+## 6.1 Problema:
+❌ Erro: "The process cannot access the file '...dll' because it is being used by another process"
+❌ DLLs bloqueadas pela API em execução
+
+## 6.2 Solução:
+```bash
+# 1. Identificar PID da API:
+netstat -ano | findstr :7249
+
+# 2. Parar processo:
+taskkill //PID NUMERO_PID //F
+
+# 3. Fazer build:
+dotnet build
+
+# 4. Reiniciar API:
+dotnet run
+```
+
+# ==============================================
+# CONFIGURAÇÃO FINAL
+# ==============================================
+
+## Arquitetura de Portas:
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Front-end     │    │       API       │    │   SQL Server    │
+│   (Docker)      │◄──►│     (Local)     │◄──►│    (Docker)     │
+│  localhost:7248 │    │ localhost:7249  │    │ localhost:14333 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+## Ambientes:
+- **Development (Local):** API conecta via localhost:14333
+- **Production (Docker):** Aplicações conectam via hostname 'db'
+
+## Arquivos Modificados:
+1. docker-compose.yml → Porta 7248 para front-end
+2. appsettings.json → Connection string com tcp:localhost
+3. appsettings.Development.json → Connection string para desenvolvimento
+4. Certificado HTTPS → Tornado confiável
+
+# ==============================================
+# COMANDOS DE VERIFICAÇÃO
+# ==============================================
+
+## Verificar se tudo está funcionando:
+```bash
+# 1. Containers rodando:
+docker ps
+
+# 2. API rodando:
+netstat -ano | findstr :7249
+
+# 3. Portas corretas:
+netstat -ano | findstr :7248   # Front-end
+netstat -ano | findstr :14333  # SQL Server
+
+# 4. Test HTTPS da API:
+curl -k https://localhost:7249
+```
+
+# ==============================================
+# TROUBLESHOOTING FUTURO
+# ==============================================
+
+## Se API não iniciar:
+1. Verificar se porta 7249 está ocupada
+2. Parar processo conflitante
+3. Reiniciar API
+
+## Se front-end não conectar na API:
+1. Verificar certificado HTTPS
+2. Verificar se API está rodando
+3. Verificar configuração HttpClient no front-end
+
+## Se migrations falharem:
+1. Verificar se SQL Server está rodando (docker ps)
+2. Verificar connection string
+3. Usar ASPNETCORE_ENVIRONMENT=Development
+
+## Se build falhar:
+1. Parar API antes do build
+2. Fazer build
+3. Reiniciar API
+
+# ==============================================
+# RESUMO DOS APRENDIZADOS
+# ==============================================
+
+✅ **Separação de ambientes** é crucial (Development vs Production)
+✅ **Mapeamento de portas** Docker precisa ser único por serviço
+✅ **Connection strings** diferentes para cada ambiente
+✅ **Certificados HTTPS** precisam ser confiáveis para desenvolvimento
+✅ **Processos em execução** podem bloquear builds
+✅ **TCP/IP explícito** evita problemas de Named Pipes no Windows

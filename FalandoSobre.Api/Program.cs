@@ -4,11 +4,8 @@ using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Infrastructure.Repositories;
 using FalandoSobre.Web.Data;
-using FalandoSobreApplication.Interfaces;
-using FalandoSobreApplication.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +72,7 @@ builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<ILogRepository, LogRepository>();
 builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
 builder.Services.AddTransient<IUserInfoRepository, UserInfoRepository>();
+builder.Services.AddTransient<ILikeRepository, LikeRepository>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSenderService>();
 
 // Configuração de Swagger e API

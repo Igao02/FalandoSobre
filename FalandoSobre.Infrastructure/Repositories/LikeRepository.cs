@@ -26,13 +26,6 @@ public class LikeRepository : ILikeRepository
         return like;
     }
 
-    public async Task<IEnumerable<Like>> GetUserLikesAsync(string userName)
-    {
-        return await _context.Likes
-            .Where(l => l.UserName == userName)
-            .ToListAsync();
-    }
-
     public async Task RemoveLikesAsync(Guid id)
     {
         var like = await GetAsync(id);
@@ -43,12 +36,5 @@ public class LikeRepository : ILikeRepository
             await _context.SaveChangesAsync();
         }
     }
-
-    public async Task<Like?> GetUserLikeAsync(string userName, Guid reportId)
-    {
-        return await _context.Likes
-            .FirstOrDefaultAsync(l => l.UserName == userName && l.ReportId == reportId);
-    }
-
 }
 

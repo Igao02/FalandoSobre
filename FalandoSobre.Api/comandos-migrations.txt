@@ -1,0 +1,59 @@
+# ==============================================
+# COMANDOS DAS MIGRATIONS - ENTITY FRAMEWORK
+# ==============================================
+
+# IMPORTANTE: Execute todos os comandos a partir do diretório da API:
+# cd /c/Users/Igao/FalandoSobre/src/FalandoSobre.Api
+
+# ==============================================
+# APLICAR MIGRATIONS
+# ==============================================
+
+# Opção 1 - Com environment variable (recomendado):
+ASPNETCORE_ENVIRONMENT=Development dotnet ef database update --project ../FalandoSobre.Infrastructure --startup-project .
+
+# Opção 2 - Especificando connection string diretamente:
+dotnet ef database update --project ../FalandoSobre.Infrastructure --startup-project . --connection "Server=localhost,14333;Database=master;User Id=sa;Password=SqlServer123!;TrustServerCertificate=true;"
+
+# ==============================================
+# OUTROS COMANDOS ÚTEIS
+# ==============================================
+
+# Listar todas as migrations:
+dotnet ef migrations list --project ../FalandoSobre.Infrastructure --startup-project .
+
+# Criar uma nova migration:
+dotnet ef migrations add NomeDaMigration --project ../FalandoSobre.Infrastructure --startup-project .
+
+# Reverter para uma migration específica:
+dotnet ef database update NomeDaMigration --project ../FalandoSobre.Infrastructure --startup-project .
+
+# Remover a última migration (se ainda não foi aplicada):
+dotnet ef migrations remove --project ../FalandoSobre.Infrastructure --startup-project .
+
+# Ver script SQL da migration:
+dotnet ef migrations script --project ../FalandoSobre.Infrastructure --startup-project .
+
+# ==============================================
+# TROUBLESHOOTING
+# ==============================================
+
+# Se der erro de "arquivo em uso", pare a API primeiro:
+# 1. Encontrar o PID: netstat -ano | findstr :7249
+# 2. Parar processo: taskkill //PID NUMERO_PID //F
+# 3. Executar migration
+# 4. Reiniciar API: dotnet run
+
+# ==============================================
+# CONFIGURAÇÃO NECESSÁRIA
+# ==============================================
+
+# Certifique-se que o SQL Server Docker está rodando:
+docker ps
+
+# Se não estiver, iniciar:
+cd /c/Users/Igao/FalandoSobre/src
+docker-compose up -d db
+
+# Verificar se porta 14333 está disponível:
+netstat -ano | findstr :14333

@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11018.127
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Web", "FalandoSobre.Web\FalandoSobre.Web.csproj", "{8719DBF7-5F63-4BFA-B5B0-4E53FC84CFEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Web", "FalandoSobre.Web\FalandoSobre.Web\FalandoSobre.Web.csproj", "{8719DBF7-5F63-4BFA-B5B0-4E53FC84CFEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Web.Client", "FalandoSobre.Web.Client\FalandoSobre.Web.Client.csproj", "{60E700C0-F848-46A0-AED9-BB2B830F5934}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Web.Client", "FalandoSobre.Web\FalandoSobre.Web.Client\FalandoSobre.Web.Client.csproj", "{60E700C0-F848-46A0-AED9-BB2B830F5934}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Presentation", "1 - Presentation", "{57E44150-6C74-4C1D-A7EE-ADA7B3AAF442}"
 EndProject
@@ -13,19 +13,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Application & Domain", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Infra & Shared", "3 - Infra & Shared", "{5C9C89C7-EECE-415D-BBB5-609E03E02515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Infrastructure", "..\FalandoSobre.Infrastructure\FalandoSobre.Infrastructure.csproj", "{7BCDAF06-9E3C-404B-871D-69F3D5636242}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Infrastructure", "FalandoSobre.Infrastructure\FalandoSobre.Infrastructure.csproj", "{7BCDAF06-9E3C-404B-871D-69F3D5636242}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.DomainCore", "..\FalandoSobre.DomainCore\FalandoSobre.DomainCore.csproj", "{D126E001-1C53-4C44-83C6-918ACFE34A8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.DomainCore", "FalandoSobre.DomainCore\FalandoSobre.DomainCore.csproj", "{D126E001-1C53-4C44-83C6-918ACFE34A8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Domain", "..\FalandoSobre.Domain\FalandoSobre.Domain.csproj", "{1EB30269-8626-402A-BB24-17C93F4439DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Domain", "FalandoSobre.Domain\FalandoSobre.Domain.csproj", "{1EB30269-8626-402A-BB24-17C93F4439DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.SharedKernel", "..\FalandoSobre.SharedKernel\FalandoSobre.SharedKernel.csproj", "{68F71091-43B7-44E9-9227-43DE95D97DDC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.SharedKernel", "FalandoSobre.SharedKernel\FalandoSobre.SharedKernel.csproj", "{68F71091-43B7-44E9-9227-43DE95D97DDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobreApplication", "..\FalandoSobreApplication\FalandoSobreApplication.csproj", "{3704CF46-A56B-4684-AAEC-1386B629CEED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobreApplication", "FalandoSobreApplication\FalandoSobreApplication.csproj", "{3704CF46-A56B-4684-AAEC-1386B629CEED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Api", "4 - Api", "{BB6EA988-A719-49CA-88E5-A21C4BBBAA09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Api", "..\FalandoSobre.Api\FalandoSobre.Api.csproj", "{A8FCC303-FD06-4FD1-A534-B5929CD386E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalandoSobre.Api", "FalandoSobre.Api\FalandoSobre.Api.csproj", "{A8FCC303-FD06-4FD1-A534-B5929CD386E5}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{A8FCC303-FD06-4FD1-A534-B5929CD386E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8FCC303-FD06-4FD1-A534-B5929CD386E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8FCC303-FD06-4FD1-A534-B5929CD386E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

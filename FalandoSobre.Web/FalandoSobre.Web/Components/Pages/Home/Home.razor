@@ -101,6 +101,7 @@
                                    Color="Color.Default"
                                    StartIcon="@Icons.Material.Filled.ThumbUp"
                                    Size="Size.Small"
+                                   OnClick="@(() => CreateLikeAsync(report.Id))"
                                    Style="text-transform: none;">
                             Curtir
                         </MudButton>

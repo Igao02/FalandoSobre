@@ -11,18 +11,18 @@ public class Like : Entity
 
     public DateTime? LikeDate { get; set; } = DateTime.Now;
 
-    public string UserName { get; set; }
-
     public virtual Guid ReportId { get; set; }
 
     public virtual Report Report { get; set; }
 
     public bool Actived { get; set; } = true;
 
-    public Like(DateTime? likeDate, string userName, Guid reportId) : base()
+    public string? ApplicationUserId { get; set; }
+
+    public Like(DateTime? likeDate, Guid reportId, string? applicationUserId) : base()
     {
         LikeDate = likeDate;
-        UserName = userName;
         ReportId = reportId;
+        ApplicationUserId = applicationUserId;
     }
 }

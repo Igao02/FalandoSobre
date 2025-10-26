@@ -1,0 +1,136 @@
+# ==============================================
+# COMANDOS DO DOCKER - PROJETO FALANDOSOBRE
+# ==============================================
+
+# IMPORTANTE: Execute todos os comandos a partir do diretório src:
+# cd /c/Users/Igao/FalandoSobre/src
+
+# ==============================================
+# COMANDOS BÁSICOS
+# ==============================================
+
+# Ver containers rodando:
+docker ps
+
+# Ver todos os containers (incluindo parados):
+docker ps -a
+
+# Ver imagens disponíveis:
+docker images
+
+# ==============================================
+# GERENCIAR CONTAINERS
+# ==============================================
+
+# Iniciar todos os serviços:
+docker-compose up -d
+
+# Iniciar apenas o banco de dados:
+docker-compose up -d db
+
+# Iniciar apenas o front-end web:
+docker-compose up -d falandosobre.web
+
+# Parar todos os containers:
+docker-compose down
+
+# Parar e remover volumes (CUIDADO - apaga dados do banco):
+docker-compose down -v
+
+# Reiniciar um container específico:
+docker-compose restart falandosobre.web
+docker-compose restart db
+
+# ==============================================
+# LOGS E DEBUG
+# ==============================================
+
+# Ver logs de um container:
+docker logs sqlserver_container
+docker logs webapp_container
+
+# Ver logs em tempo real (follow):
+docker logs -f sqlserver_container
+
+# Ver apenas as últimas 10 linhas de log:
+docker logs --tail 10 sqlserver_container
+
+# ==============================================
+# EXECUÇÃO DENTRO DOS CONTAINERS
+# ==============================================
+
+# Executar comando dentro do container SQL Server:
+docker exec -it sqlserver_container bash
+
+# Executar comando dentro do container Web:
+docker exec -it webapp_container bash
+
+# Conectar ao SQL Server via sqlcmd (dentro do container):
+docker exec -it sqlserver_container /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SqlServer123!' -C
+
+# ==============================================
+# REBUILD E ATUALIZAÇÃO
+# ==============================================
+
+# Rebuildar as imagens (após mudanças no código):
+docker-compose build
+
+# Rebuildar e iniciar:
+docker-compose up -d --build
+
+# Rebuildar apenas o front-end:
+docker-compose build falandosobre.web
+
+# ==============================================
+# TROUBLESHOOTING
+# ==============================================
+
+# Verificar portas em uso no Windows:
+netstat -ano | findstr :7248    # Front-end
+netstat -ano | findstr :14333   # SQL Server
+netstat -ano | findstr :7249    # API (não deveria aparecer aqui)
+
+# Parar processo específico (se necessário):
+taskkill //PID NUMERO_PID //F
+
+# Limpar cache do Docker (se containers não sobem):
+docker system prune
+
+# Remover containers parados:
+docker container prune
+
+# ==============================================
+# CONFIGURAÇÃO ATUAL DO PROJETO
+# ==============================================
+
+# Portas configuradas:
+# - Front-end (Docker): localhost:7248
+# - SQL Server (Docker): localhost:14333
+# - API (Local): localhost:7249
+
+# Acessos:
+# - Front-end: http://localhost:7248
+# - SQL Server: localhost,14333 (via connection string)
+
+# ==============================================
+# BACKUP E RESTORE (OPCIONAL)
+# ==============================================
+
+# Fazer backup do volume do banco:
+docker run --rm -v src_sqlserver-data:/data -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /data
+
+# Restaurar backup:
+docker run --rm -v src_sqlserver-data:/data -v $(pwd):/backup ubuntu tar xvf /backup/backup.tar -C /
+
+# ==============================================
+# COMANDOS DE EMERGÊNCIA
+# ==============================================
+
+# Parar todos os containers Docker:
+docker stop $(docker ps -aq)
+
+# Remover todos os containers:
+docker rm $(docker ps -aq)
+
+# Limpar completamente o Docker (CUIDADO):
+docker system prune -a --volumes
