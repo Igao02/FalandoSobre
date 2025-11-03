@@ -17,6 +17,15 @@ public class LikeRepository : ILikeRepository
 
     public async Task<IEnumerable<Like>> GetLikesAsync() => await _context.Likes.ToListAsync();
 
+    public async Task<IEnumerable<Like>> GetLikesByUserIdAsync(string userId) =>
+        await _context.Likes.Where(l => l.ApplicationUserId == userId).ToListAsync();
+
+    public async Task<IEnumerable<Like>> GetLikesByReportIdAsync(Guid reportId) =>
+        await _context.Likes.Where(l => l.ReportId == reportId && l.Actived).ToListAsync();
+
+    public async Task<Like?> GetLikeByUserAndReportAsync(string userId, Guid reportId) =>
+        await _context.Likes.FirstOrDefaultAsync(l => l.ApplicationUserId == userId && l.ReportId == reportId && l.Actived);
+
     public async Task<Like> AddLikesAsync(Like like)
     {
         await _context.AddAsync(like);
@@ -26,29 +35,18 @@ public class LikeRepository : ILikeRepository
         return like;
     }
 
-    public async Task<IEnumerable<Like>> GetUserLikesAsync(string userName)
+    public async Task<bool> RemoveLikeAsync(string userId, Guid reportId)
     {
-        return await _context.Likes
-            .Where(l => l.UserName == userName)
-            .ToListAsync();
-    }
-
-    public async Task RemoveLikesAsync(Guid id)
-    {
-        var like = await GetAsync(id);
+        var like = await GetLikeByUserAndReportAsync(userId, reportId);
 
         if (like != null)
         {
             _context.Likes.Remove(like);
             await _context.SaveChangesAsync();
+            return true;
         }
-    }
 
-    public async Task<Like?> GetUserLikeAsync(string userName, Guid reportId)
-    {
-        return await _context.Likes
-            .FirstOrDefaultAsync(l => l.UserName == userName && l.ReportId == reportId);
+        return false;
     }
-
 }
 

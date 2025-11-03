@@ -46,6 +46,7 @@ builder.Services.AddTransient<IReportRepository, ReportHandler>();
 builder.Services.AddTransient<IImageRepository, ImageHandler>();
 builder.Services.AddTransient<IInstitutionRepository, InstitutionHandler>();
 builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
+builder.Services.AddTransient<ILikeRepository, LikeHandler>();
 builder.Services.AddTransient<IReportAppService, ReportAppService>();
 
 builder.Services.AddAuthentication(options =>
