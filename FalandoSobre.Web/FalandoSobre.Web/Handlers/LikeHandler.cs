@@ -1,6 +1,10 @@
-﻿using FalandoSobre.Domain.Entities;
+using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobreApplication.UseCases.LikeUseCase.Create;
+using FalandoSobreApplication.UseCases.LikeUseCase.ListByUserId;
+using FalandoSobreApplication.UseCases.LikeUseCase.Delete;
+using FalandoSobreApplication.UseCases.LikeUseCase.ListByReportId;
+using System.Net.Http.Json;
 
 namespace FalandoSobre.Web.Handlers;
 
@@ -48,18 +52,95 @@ public class LikeHandler(IHttpClientFactory httpClientFactory, ILogger<LikeHandl
         throw new NotImplementedException();
     }
 
-    public Task<Like?> GetUserLikeAsync(string userName, Guid reportId)
+    public async Task<IEnumerable<Like>> GetLikesByUserIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var url = $"/likes/user/{userId}";
+            var response = await _httpClient.GetFromJsonAsync<ListLikesByUserIdResponse>(url);
+            
+            if (response?.Likes == null)
+                return new List<Like>();
+
+            return response.Likes.Select(dto => new Like
+            {
+                Id = dto.Id,
+                ReportId = dto.ReportId,
+                ApplicationUserId = dto.ApplicationUserId,
+                Actived = dto.Actived,
+                LikeDate = dto.LikeDate
+            });
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Erro ao buscar likes do usuário {UserId}", userId);
+            return new List<Like>();
+        }
     }
 
-    public Task<IEnumerable<Like>> GetUserLikesAsync(string userName)
+    public async Task<IEnumerable<Like>> GetLikesByReportIdAsync(Guid reportId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var url = $"/likes/report/{reportId}";
+            var response = await _httpClient.GetFromJsonAsync<ListLikesByReportIdResponse>(url);
+            
+            if (response?.Likes == null)
+                return new List<Like>();
+
+            return response.Likes.Select(dto => new Like
+            {
+                Id = dto.Id,
+                ReportId = reportId,
+                ApplicationUserId = dto.ApplicationUserId,
+                Actived = true,
+                LikeDate = dto.LikeDate
+            });
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Erro ao buscar likes do report {ReportId}", reportId);
+            return new List<Like>();
+        }
     }
 
-    public Task RemoveLikesAsync(Guid id)
+    public async Task<Like?> GetLikeByUserAndReportAsync(string userId, Guid reportId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var likes = await GetLikesByUserIdAsync(userId);
+            return likes.FirstOrDefault(l => l.ReportId == reportId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao buscar like do usuário {UserId} no report {ReportId}", userId, reportId);
+            return null;
+        }
+    }
+
+    public async Task<bool> RemoveLikeAsync(string userId, Guid reportId)
+    {
+        try
+        {
+            var url = $"/delete-like?userId={userId}&reportId={reportId}";
+            var response = await _httpClient.DeleteAsync(url);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                logger.LogInformation("Like removido com sucesso!");
+                return true;
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                logger.LogError("Erro ao remover curtida: {Error}", error);
+                return false;
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Erro ao remover like");
+            return false;
+        }
     }
 }
