@@ -8,7 +8,7 @@ public class Comment : Entity
 {
     public Comment()
     {
-        //Empty
+        //ORM Purpose
     }
 
     [Required(ErrorMessage = "Conteúdo do comentário é necessário")]
@@ -24,12 +24,15 @@ public class Comment : Entity
 
     public virtual Report Report { get; set; }
 
-    public Comment(string commentContent, DateTime commentDate, Guid reportId, string userName) : base()
+    public string? ApplicationUserId { get; set; }
+
+    public Comment(string commentContent, DateTime commentDate, Guid reportId, string userName, string? applicationUserId) : base()
     {
         CommentContent = commentContent;
         CommentDate = commentDate;
         ReportId = reportId;
         UserName = userName;
+        ApplicationUserId = applicationUserId;
     }
 }
 

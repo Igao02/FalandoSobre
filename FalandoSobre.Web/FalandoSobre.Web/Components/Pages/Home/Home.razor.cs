@@ -11,6 +11,7 @@ public class HomePage : ComponentBase
 {
     [Inject] public IReportAppService ReportAppService { get; set; } = null!;
     [Inject] public ILikeRepository LikeRepository { get; set; } = null!;
+    [Inject] public ICommentRepository CommentRepository { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
 
 
@@ -19,6 +20,11 @@ public class HomePage : ComponentBase
     protected Like ModelLike { get; set; } = new();
     protected HashSet<Guid> LikedReportIds { get; set; } = new();
     protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new();
+
+ 
+    protected Dictionary<Guid, List<Comment>> ReportComments { get; set; } = new();
+    protected Dictionary<Guid, string> NewCommentText { get; set; } = new();
+    protected HashSet<Guid> OpenCommentsForReports { get; set; } = new();
 
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
@@ -54,6 +60,7 @@ public class HomePage : ComponentBase
             ModelUserInfo = await ReportAppService.GetProfilePhotosAsync(Model);
             await LoadUserLikesAsync();
             await LoadLikeCountsAsync();
+            await LoadCommentsAsync();
         }
         catch (Exception ex)
         {
@@ -83,10 +90,8 @@ public class HomePage : ComponentBase
                 return;
             }
 
-            // Verifica se o usuário já curtiu
             if (LikedReportIds.Contains(reportId))
             {
-                // Remove o like
                 var handler = LikeRepository as Handlers.LikeHandler;
                 if (handler != null)
                 {
@@ -104,7 +109,7 @@ public class HomePage : ComponentBase
             }
             else
             {
-                // Adiciona o like
+                
                 ModelLike.ReportId = reportId;
                 ModelLike.ApplicationUserId = userIdString;
                 await LikeRepository.AddLikesAsync(ModelLike);
@@ -156,7 +161,83 @@ public class HomePage : ComponentBase
         }
     }
 
+    private async Task LoadCommentsAsync()
+    {
+        ReportComments.Clear();
+        NewCommentText.Clear();
+
+        foreach (var report in Model)
+        {
+            var comments = await CommentRepository.GetByReportIdAsync(report.Id);
+            ReportComments[report.Id] = comments.OrderByDescending(c => c.CommentDate).ToList();
+            NewCommentText[report.Id] = string.Empty;
+        }
+    }
+
     protected bool HasUserLiked(Guid reportId) => LikedReportIds.Contains(reportId);
 
     protected int GetLikeCount(Guid reportId) => ReportLikeCounts.ContainsKey(reportId) ? ReportLikeCounts[reportId] : 0;
+
+    protected void ToggleComments(Guid reportId)
+    {
+        if (OpenCommentsForReports.Contains(reportId))
+            OpenCommentsForReports.Remove(reportId);
+        else
+            OpenCommentsForReports.Add(reportId);
+    }
+
+    protected async Task AddCommentAsync(Guid reportId)
+    {
+        if (!NewCommentText.TryGetValue(reportId, out var text) || string.IsNullOrWhiteSpace(text))
+        {
+            errorMessage = "Digite um comentário antes de enviar.";
+            return;
+        }
+
+        isLoading = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            var userName = user.Identity?.Name ?? "Anônimo";
+            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                errorMessage = "Usuário não encontrado.";
+                return;
+            }
+
+            var comment = new Comment
+            {
+                CommentContent = text,
+                CommentDate = DateTime.UtcNow,
+                ReportId = reportId,
+                UserName = userName,
+                ApplicationUserId = userIdString,
+            };
+
+            var created = await CommentRepository.AddAsync(comment);
+
+            if (!ReportComments.ContainsKey(reportId))
+                ReportComments[reportId] = new List<Comment>();
+
+            ReportComments[reportId].Insert(0, created);
+            NewCommentText[reportId] = string.Empty;
+
+            successMessage = "Comentário enviado com sucesso!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao enviar comentário: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 }

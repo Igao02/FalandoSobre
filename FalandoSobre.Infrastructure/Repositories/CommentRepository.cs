@@ -27,6 +27,14 @@ public class CommentRepository : ICommentRepository
         return comment;
     }
 
+    public async Task<IEnumerable<Comment>> GetByReportIdAsync(Guid reportId)
+    {
+        return await _context.Comments
+            .Where(c => c.ReportId == reportId && c.Actived)
+            .OrderByDescending(c => c.CommentDate)
+            .ToListAsync();
+    }
+
     public async Task DeleteAsync(Guid id)
     {
         var comment = await GetAsync(id);

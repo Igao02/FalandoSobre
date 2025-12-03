@@ -109,8 +109,9 @@
                                    Color="Color.Default"
                                    StartIcon="@Icons.Material.Filled.Comment"
                                    Size="Size.Small"
-                                   Style="text-transform: none;">
-                            Comentar
+                                   Style="text-transform: none;"
+                                   OnClick="@(() => ToggleComments(report.Id))">
+                            Comentar @(ReportComments.ContainsKey(report.Id) ? $"({ReportComments[report.Id].Count})" : string.Empty)
                         </MudButton>
                         <MudButton Variant="Variant.Text"
                                    Color="Color.Default"
@@ -120,6 +121,49 @@
                             Compartilhar
                         </MudButton>
                     </MudCardActions>
+
+                    @if (OpenCommentsForReports.Contains(report.Id))
+                    {
+                        <MudPaper Style="padding: 8px 16px 16px 16px; background-color: #fafafa;">
+                            <MudText Typo="Typo.subtitle2">Comentários</MudText>
+
+                            @if (ReportComments.ContainsKey(report.Id) && ReportComments[report.Id].Any())
+                            {
+                                @foreach (var comment in ReportComments[report.Id])
+                                {
+                                    <MudStack Style="margin-top: 8px;">
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            <b>@comment.UserName</b> - @comment.CommentDate.ToString("dd/MM/yyyy HH:mm")
+                                        </MudText>
+                                        <MudText Typo="Typo.body2">@comment.CommentContent</MudText>
+                                    </MudStack>
+                                }
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic; margin-top: 8px;">
+                                    Nenhum comentário ainda.
+                                </MudText>
+                            }
+
+                            <MudStack Style="margin-top: 12px;" Gap="8px">
+                                <MudTextField @bind-Value="NewCommentText[report.Id]"
+                                              Placeholder="Escreva um comentário..."
+                                              Lines="2"
+                                              FullWidth="true"
+                                              Immediate="true"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Comment" />
+
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Size="Size.Small"
+                                           OnClick="@(() => AddCommentAsync(report.Id))">
+                                    Enviar
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    }
                 </MudCard>
             }
 

@@ -29,9 +29,6 @@ public sealed class ListImageByReportIdHandler(
                })
                .ToList();
 
-
-            logger.LogInformation("Imagens listadas com sucesso: {Count} imagens encontradas", response.Count);
-
             return Result.Success(response);
         }
         catch (Exception e)
