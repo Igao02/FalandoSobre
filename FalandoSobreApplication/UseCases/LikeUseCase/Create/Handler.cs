@@ -56,6 +56,7 @@ public sealed class CreateLikeHandler : ICommandHandler<CreateLikeCommand, LikeR
             };
 
             await _logRepository.Create(log);
+            _logger.LogInformation("Like criado com sucesso com ID: {LikeId} para User ID: {ApplicationUserId}", createdLike.Id, request.ApplicationUserId);
 
             return Result.Success(response);
         }

@@ -55,6 +55,7 @@ public sealed class DeleteLikeHandler : ICommandHandler<DeleteLikeCommand, Delet
                 Success = true,
                 Message = "Like removido com sucesso"
             };
+            _logger.LogInformation("Like removido com sucesso para User ID: {UserId}, Report ID: {ReportId}", request.UserId, request.ReportId);
 
             return Result.Success(response);
         }

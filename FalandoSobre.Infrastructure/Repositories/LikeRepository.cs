@@ -41,7 +41,8 @@ public class LikeRepository : ILikeRepository
 
         if (like != null)
         {
-            _context.Likes.Remove(like);
+            like.Actived = false;
+            _context.Likes.Update(like);
             await _context.SaveChangesAsync();
             return true;
         }

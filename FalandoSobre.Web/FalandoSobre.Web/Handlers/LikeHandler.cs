@@ -1,10 +1,8 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobreApplication.UseCases.LikeUseCase.Create;
-using FalandoSobreApplication.UseCases.LikeUseCase.ListByUserId;
-using FalandoSobreApplication.UseCases.LikeUseCase.Delete;
 using FalandoSobreApplication.UseCases.LikeUseCase.ListByReportId;
-using System.Net.Http.Json;
+using FalandoSobreApplication.UseCases.LikeUseCase.ListByUserId;
 
 namespace FalandoSobre.Web.Handlers;
 
