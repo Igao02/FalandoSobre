@@ -62,6 +62,11 @@ public class InstitutionHandler(IHttpClientFactory httpClientFactory, ILogger<In
         throw new NotImplementedException();
     }
 
+    public Task<Institution?> GetByApplicationUserIdAsync(string applicationUserId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<Institution?> GetByDocAsync(string doc)
     {
         throw new NotImplementedException();

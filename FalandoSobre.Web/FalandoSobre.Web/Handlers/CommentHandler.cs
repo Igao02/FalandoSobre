@@ -48,10 +48,20 @@ public class CommentHandler(IHttpClientFactory httpClientFactory, ILogger<Commen
         throw new ApplicationException($"Erro ao criar comentário: {error}");
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        // Ainda não utilizado no front; implementar quando existir endpoint correspondente
-        throw new NotImplementedException();
+        var url = $"/comments/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+
+        if (response.IsSuccessStatusCode)
+        {
+            logger.LogInformation("Comentário {CommentId} removido com sucesso", id);
+            return;
+        }
+
+        var error = await response.Content.ReadAsStringAsync();
+        logger.LogError("Erro ao remover comentário {CommentId}: {Error}", id, error);
+        throw new ApplicationException($"Erro ao remover comentário: {error}");
     }
 
     public Task<Comment> EditAsync(Comment comment)
