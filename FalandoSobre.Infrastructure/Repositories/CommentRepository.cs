@@ -38,8 +38,14 @@ public class CommentRepository : ICommentRepository
     public async Task DeleteAsync(Guid id)
     {
         var comment = await GetAsync(id);
+        if (comment is null)
+        {
+            return;
+        }
 
-        _context.Comments.Remove(comment!);
+        comment.Actived = false;
+        _context.Comments.Update(comment);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<Comment> EditAsync(Comment comment)

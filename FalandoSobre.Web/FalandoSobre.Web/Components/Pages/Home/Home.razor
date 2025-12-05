@@ -25,11 +25,11 @@
             @foreach (var report in Model)
             {
                 <MudCard Style="margin-bottom: 24px; border-radius: 16px; overflow: hidden;
-                                  transition: transform 0.3s ease, box-shadow 0.3s ease;
-                                  &:hover {
-                                      transform: translateY(-5px);
-                                      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-                                  }">
+                                      transition: transform 0.3s ease, box-shadow 0.3s ease;
+                                      &:hover {
+                                          transform: translateY(-5px);
+                                          box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                                      }">
                     <MudCardHeader>
                         <MudGrid Spacing="2">
                             <MudItem xs="2" style="display: flex; justify-content: center;">
@@ -67,14 +67,14 @@
                                         <MudImage Src="@image.ImageUrl"
                                                   Class="post-image"
                                                   Style="width: 100%; height: auto;
-                                                                   max-height: 400px;
-                                                                   object-fit: cover;
-                                                                   border-radius: 12px;
-                                                                   cursor: pointer;
-                                                                   transition: transform 0.3s ease;
-                                                                   &:hover {
-                                                                       transform: scale(1.02);
-                                                                   }" />
+                                                                               max-height: 400px;
+                                                                               object-fit: cover;
+                                                                               border-radius: 12px;
+                                                                               cursor: pointer;
+                                                                               transition: transform 0.3s ease;
+                                                                               &:hover {
+                                                                                   transform: scale(1.02);
+                                                                               }" />
                                     </MudItem>
                                 }
                             </MudGrid>
@@ -82,12 +82,12 @@
                         else
                         {
                             <MudPaper Elevation="0" Style="background-color: #f5f5f5;
-                                                                border-radius: 12px;
-                                                                height: 150px;
-                                                                display: flex;
-                                                                align-items: center;
-                                                                justify-content: center;
-                                                                margin-top: 16px;">
+                                                                        border-radius: 12px;
+                                                                        height: 150px;
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        margin-top: 16px;">
                                 <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-style: italic;">
                                     <MudIcon Icon="@Icons.Material.Filled.PhotoCamera" Size="Size.Medium" />
                                     Nenhuma imagem disponível
@@ -135,7 +135,19 @@
                                         <MudText Typo="Typo.caption" Color="Color.Secondary">
                                             <b>@comment.UserName</b> - @comment.CommentDate.ToString("dd/MM/yyyy HH:mm")
                                         </MudText>
-                                        <MudText Typo="Typo.body2">@comment.CommentContent</MudText>
+                                        <MudText Typo="Typo.body2">
+                                            @comment.CommentContent
+                                            @if (!string.IsNullOrEmpty(CurrentUserId) && comment.ApplicationUserId == CurrentUserId)
+                                            {
+                                                <MudButton Variant="Variant.Text"
+                                                           Color="Color.Error"
+                                                           Size="Size.Small"
+                                                           Style="margin-left: 8px; text-transform: none;"
+                                                           OnClick="@(() => DeleteCommentAsync(report.Id, comment.Id))">
+                                                    Excluir
+                                                </MudButton>
+                                            }
+                                        </MudText>
                                     </MudStack>
                                 }
                             }

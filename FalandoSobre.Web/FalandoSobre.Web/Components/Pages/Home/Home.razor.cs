@@ -26,6 +26,8 @@ public class HomePage : ComponentBase
     protected Dictionary<Guid, string> NewCommentText { get; set; } = new();
     protected HashSet<Guid> OpenCommentsForReports { get; set; } = new();
 
+    protected string? CurrentUserId { get; set; }
+
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
@@ -37,6 +39,7 @@ public class HomePage : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCurrentUserAsync();
         await LoadDataAsync();
     }
 
@@ -47,6 +50,13 @@ public class HomePage : ComponentBase
             CurrentPage = page;
             await LoadDataAsync();
         }
+    }
+
+    private async Task LoadCurrentUserAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        CurrentUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 
     private async Task LoadDataAsync()
@@ -240,4 +250,55 @@ public class HomePage : ComponentBase
             StateHasChanged();
         }
     }
+
+    protected async Task DeleteCommentAsync(Guid reportId, Guid commentId)
+    {
+        isLoading = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+
+        try
+        {
+            if (string.IsNullOrEmpty(CurrentUserId))
+            {
+                errorMessage = "Usuário não encontrado.";
+                return;
+            }
+
+            if (!ReportComments.TryGetValue(reportId, out var commentsForReport))
+            {
+                errorMessage = "Comentário não encontrado.";
+                return;
+            }
+
+            var comment = commentsForReport.FirstOrDefault(c => c.Id == commentId);
+            if (comment is null)
+            {
+                errorMessage = "Comentário não encontrado.";
+                return;
+            }
+
+            if (comment.ApplicationUserId != CurrentUserId)
+            {
+                errorMessage = "Você não tem permissão para excluir este comentário.";
+                return;
+            }
+
+            await CommentRepository.DeleteAsync(commentId);
+
+            commentsForReport.Remove(comment);
+
+            successMessage = "Comentário excluído com sucesso!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao excluir comentário: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
 }
