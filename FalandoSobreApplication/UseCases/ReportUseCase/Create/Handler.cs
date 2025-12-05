@@ -12,12 +12,14 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
     private readonly IReportRepository _reportRepository;
     private readonly ILogger<CreateReportHandler> _logger;
     private readonly ILogRepository _logRepository;
+    private readonly IInstitutionRepository? _institutionRepository;
 
-    public CreateReportHandler(IReportRepository reportRepository, ILogger<CreateReportHandler> logger, ILogRepository logRepository)
+    public CreateReportHandler(IReportRepository reportRepository, ILogger<CreateReportHandler> logger, ILogRepository logRepository, IInstitutionRepository? institutionRepository)
     {
         _reportRepository = reportRepository;
         _logger = logger;
         _logRepository = logRepository;
+        _institutionRepository = institutionRepository;
     }
 
     public async Task<Result<CreateReportResponse>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
@@ -29,17 +31,24 @@ public sealed class CreateReportHandler : ICommandHandler<CreateReportCommand, C
             return Result.Failure<CreateReportResponse>(error);
         }
 
-        _logger.LogInformation("Iniciando criação do relatório para o usuário {UserName}", request);
-
         try
         {
+            var institution = _institutionRepository is null
+                ? null
+                : await _institutionRepository.GetByApplicationUserIdAsync(request.ApplicationUserId);
+
+            if (institution == null)
+            {
+                _logger.LogInformation("Nenhuma instituição encontrada para o usuário {UserId}", request.ApplicationUserId);
+            }
+
             var report = new Report(
                 request.ReportName,
                 request.TypeReport,
                 request.ReportDescription,
                 DateTime.UtcNow,
                 request.UserName,
-                request.IsEvent,
+                institution?.ApplicationUserId == request.ApplicationUserId ? true : false,
                 request.Actived,
                 request.ApplicationUserId
             );
