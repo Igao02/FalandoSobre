@@ -6,6 +6,7 @@ public interface IInstitutionRepository
     Task DeleteAsync(Guid id);
     Task<Institution> EditAsync(Institution institution);
     Task<Institution?> GetAsync(Guid id);
+    Task<Institution?> GetByApplicationUserIdAsync(string applicationUserId);
     Task<Institution?> GetByDocAsync(string doc);
     Task<Institution?> GetByNameAsync(string name);
     Task<IEnumerable<Institution>> GetListAsync();

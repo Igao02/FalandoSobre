@@ -7,3 +7,106 @@
     transform: scale(1.02);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+    }
+
+.image-gallery {
+    display: grid;
+    gap: 8px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.single-image {
+    border-radius: 16px;
+    overflow: hidden;
+    max-height: 500px;
+}
+
+.two-images {
+    grid-template-columns: 1fr 1fr;
+}
+
+.three-images {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+    .three-images > :first-child {
+        grid-column: span 2;
+    }
+
+.four-images {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.comment-section {
+    background: linear-gradient(180deg, rgba(250,250,250,0.95) 0%, rgba(255,255,255,0.95) 100%);
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.profile-avatar {
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+    .profile-avatar:hover {
+        transform: scale(1.05);
+    }
+
+.like-button.active {
+    background: rgba(93, 95, 239, 0.1);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(93, 95, 239, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(93, 95, 239, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(93, 95, 239, 0);
+    }
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}

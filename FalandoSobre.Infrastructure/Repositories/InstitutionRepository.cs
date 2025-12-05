@@ -53,5 +53,10 @@ public class InstitutionRepository : IInstitutionRepository
         return institution;
     }
 
-   
+    public async Task<Institution?> GetByApplicationUserIdAsync(string applicationUserId)
+    {
+        var existInstitution = await _context.Institutions.FirstOrDefaultAsync(i => i.ApplicationUserId == applicationUserId);
+
+        return existInstitution;
+    }
 }

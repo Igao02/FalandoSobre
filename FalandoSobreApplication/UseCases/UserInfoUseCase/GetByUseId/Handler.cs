@@ -11,13 +11,10 @@ public sealed class GetByUserIdHandler(IUserInfoRepository userInfoRepository, I
     {
         try
         {
-            logger.LogInformation("Iniciando busca de informações adicionais do usuário com ID: {UserId}", request.ApplicationUserId);
             var userInfo = await userInfoRepository.GetImageByUserId(request.ApplicationUserId);
-            logger.LogInformation("Buscando informações adicionais do usuário com ID: {UserId}", request.ApplicationUserId);
 
             if (userInfo is null)
             {
-                logger.LogInformation("Nenhuma informação adicional encontrada para o usuário com ID: {UserId}", request.ApplicationUserId);
                 var emptyResponse = new GetByUserIdResponse
                 {
                     Id = Guid.Empty,
@@ -34,7 +31,6 @@ public sealed class GetByUserIdHandler(IUserInfoRepository userInfoRepository, I
                 ApplicationUserId = userInfo.ApplicationUserId,
             };
 
-            logger.LogInformation("Informações adicionais do usuário com ID: {UserId} recuperadas com sucesso", request.ApplicationUserId);
             return Result.Success(response);
         }
         catch (Exception ex)
