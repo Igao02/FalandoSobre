@@ -1,8 +1,10 @@
-﻿using FalandoSobre.Domain.Entities;
+using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
+using FalandoSobre.Web.Components.Pages.Home.Dialogs;
 using FalandoSobreApplication.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using System.Security.Claims;
 
 namespace FalandoSobre.Web.Components.Pages.Home;
@@ -10,9 +12,11 @@ namespace FalandoSobre.Web.Components.Pages.Home;
 public class HomePage : ComponentBase
 {
     [Inject] public IReportAppService ReportAppService { get; set; } = null!;
+    [Inject] public IReportRepository ReportRepository { get; set; } = null!;
     [Inject] public ILikeRepository LikeRepository { get; set; } = null!;
     [Inject] public ICommentRepository CommentRepository { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
+    [Inject] public IDialogService DialogService { get; set; } = null!;
 
 
     protected List<Report> Model { get; set; } = new();
@@ -293,6 +297,136 @@ public class HomePage : ComponentBase
         catch (Exception ex)
         {
             errorMessage = $"Erro ao excluir comentário: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected async Task DeleteReportAsync(Guid reportId)
+    {
+        isLoading = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+
+        try
+        {
+            if (string.IsNullOrEmpty(CurrentUserId))
+            {
+                errorMessage = "Usuário não encontrado.";
+                return;
+            }
+
+            var report = Model.FirstOrDefault(r => r.Id == reportId);
+            if (report is null)
+            {
+                errorMessage = "Publicação não encontrada.";
+                return;
+            }
+
+            if (report.ApplicationUserId != CurrentUserId)
+            {
+                errorMessage = "Você não tem permissão para excluir esta publicação.";
+                return;
+            }
+
+            await ReportRepository.DeleteAsync(reportId);
+
+            // Remove da lista atual sem precisar recarregar a página inteira
+            Model.Remove(report);
+
+            successMessage = "Publicação excluída com sucesso!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao excluir publicação: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected async Task OpenEditReportDialogAsync(Report report)
+    {
+        if (string.IsNullOrEmpty(CurrentUserId) || report.ApplicationUserId != CurrentUserId)
+        {
+            errorMessage = "Você não tem permissão para editar esta publicação.";
+            StateHasChanged();
+            return;
+        }
+
+        var parameters = new DialogParameters
+    {
+        { nameof(EditReportDialog.Report), report }
+    };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var result = await DialogService.ShowAsync<EditReportDialog>(
+            "Editar publicação",
+            parameters,
+            options
+        );
+
+        if (result != null && result.Result != null)
+        {
+            var dialogResult = await result.Result;
+            if (dialogResult != null && dialogResult.Data is Report editedReport)
+            {
+                await SaveEditedReportAsync(editedReport);
+            }
+        }
+    }
+
+
+    private async Task SaveEditedReportAsync(Report editedReport)
+    {
+        isLoading = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var existing = Model.FirstOrDefault(r => r.Id == editedReport.Id);
+            if (existing is null)
+            {
+                errorMessage = "Publicação não encontrada.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(CurrentUserId) || existing.ApplicationUserId != CurrentUserId)
+            {
+                errorMessage = "Você não tem permissão para editar esta publicação.";
+                return;
+            }
+
+            editedReport.ApplicationUserId = existing.ApplicationUserId;
+            editedReport.UserName = existing.UserName;
+            editedReport.IsEvent = existing.IsEvent;
+            editedReport.Actived = existing.Actived;
+            editedReport.ReportsDate = existing.ReportsDate;
+
+            var updated = await ReportRepository.EditAsync(editedReport);
+
+            // Atualiza o item em memória
+            existing.ReportName = updated.ReportName;
+            existing.TypeReport = updated.TypeReport;
+            existing.ReportDescription = updated.ReportDescription;
+
+            successMessage = "Publicação atualizada com sucesso!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao atualizar publicação: {ex.Message}";
         }
         finally
         {

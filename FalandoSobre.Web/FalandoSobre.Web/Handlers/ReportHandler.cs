@@ -1,9 +1,11 @@
-﻿using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
+using FalandoSobre.Application.UseCases.ReportUseCase.CreateUseCase;
 using FalandoSobre.Domain.Dto.PagedRequest;
 using FalandoSobre.Domain.Dto.PagedResponse;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobreApplication.UseCases.ReportUseCase.ListUseCase;
+using FalandoSobreApplication.UseCases.ReportUseCase.Delete;
+using FalandoSobreApplication.UseCases.ReportUseCase.Edit;
 using System.Text.Json;
 
 namespace FalandoSobre.Web.Handlers;
@@ -49,14 +51,62 @@ public class ReportHandler(IHttpClientFactory httpClientFactory, ILogger<ReportH
         }
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var url = $"/reports/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+
+        if (response.IsSuccessStatusCode)
+        {
+            logger.LogInformation("Publicação {ReportId} desativada com sucesso", id);
+            return;
+        }
+
+        var error = await response.Content.ReadAsStringAsync();
+        logger.LogError("Erro ao desativar publicação {ReportId}: {Error}", id, error);
+        throw new ApplicationException($"Erro ao desativar publicação: {error}");
     }
 
-    public Task<Report> EditAsync(Report report)
+    public async Task<Report> EditAsync(Report report)
     {
-        throw new NotImplementedException();
+        var request = new EditReportCommand(
+            report.Id,
+            report.ReportName,
+            report.TypeReport,
+            report.ReportDescription
+        );
+
+        var response = await _httpClient.PutAsJsonAsync("/reports/edit", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var editedResponse = await response.Content.ReadFromJsonAsync<EditReportResponse>();
+            if (editedResponse is null)
+            {
+                throw new ApplicationException("Resposta inválida ao editar publicação.");
+            }
+
+            var editedReport = new Report(
+                editedResponse.ReportName,
+                editedResponse.TypeReport,
+                editedResponse.ReportDescription,
+                editedResponse.ReportDate,
+                editedResponse.UserName,
+                editedResponse.IsEvent,
+                editedResponse.Actived,
+                editedResponse.ApplicationUserId
+            )
+            {
+                Id = editedResponse.Id
+            };
+
+            logger.LogInformation("Publicação atualizada com sucesso: {ReportId}", editedReport.Id);
+            return editedReport;
+        }
+
+        var error = await response.Content.ReadAsStringAsync();
+        logger.LogError("Erro ao editar publicação: {Error}", error);
+        throw new ApplicationException($"Erro ao editar publicação: {error}");
     }
 
     public Task<Report?> GetAsync(Guid id)

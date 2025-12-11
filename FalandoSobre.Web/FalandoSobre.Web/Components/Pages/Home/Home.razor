@@ -156,6 +156,27 @@
 
 							<div style="flex-grow: 1;"></div>
 
+							@if (!string.IsNullOrEmpty(CurrentUserId) && report.ApplicationUserId == CurrentUserId)
+							{
+								<MudButton Variant="Variant.Text"
+										   Color="Color.Primary"
+										   StartIcon="@Icons.Material.Filled.Edit"
+										   Size="Size.Small"
+										   Style="border-radius: 8px; text-transform: none; font-weight: 500; margin-right: 4px;"
+										   OnClick="@(() => OpenEditReportDialogAsync(report))">
+									Editar
+								</MudButton>
+
+								<MudButton Variant="Variant.Text"
+										   Color="Color.Error"
+										   StartIcon="@Icons.Material.Filled.Delete"
+										   Size="Size.Small"
+										   Style="border-radius: 8px; text-transform: none; font-weight: 500;"
+										   OnClick="@(() => DeleteReportAsync(report.Id))">
+									Excluir
+								</MudButton>
+							}
+
 							<MudButton Variant="Variant.Text"
 									   Color="Color.Default"
 									   StartIcon="@Icons.Material.Filled.Bookmark"

@@ -10,7 +10,6 @@
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\FalandoSobre.Infrastructure\FalandoSobre.Infrastructure.csproj" />
     <ProjectReference Include="..\..\FalandoSobreApplication\FalandoSobreApplication.csproj" />

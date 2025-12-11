@@ -39,7 +39,7 @@ namespace FalandoSobre.Infrastructure.Repositories
         public async Task<IEnumerable<(Guid Id, string ImageUrl, Guid? ReportId)>> GetImageByReportId(Guid id)
         {
             var images = await context.Images
-                .Where(i => i.ReportId == id)
+                .Where(i => i.ReportId == id && i.Actived)
                 .Select(i => new ValueTuple<Guid, string, Guid?>(i.Id, i.ImageUrl, i.ReportId))
                 .ToListAsync();
 
