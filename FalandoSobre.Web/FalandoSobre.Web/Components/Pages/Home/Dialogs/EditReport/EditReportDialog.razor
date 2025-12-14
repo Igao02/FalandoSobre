@@ -1,0 +1,317 @@
+@rendermode InteractiveServer
+@using MudBlazor
+@using FalandoSobre.Domain.Entities
+
+<MudPopoverProvider />
+
+<MudPaper Class="pa-8 rounded-xl" Elevation="0" Style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="d-flex align-center mb-4">
+            <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large" Class="mr-4 shadow-lg">
+                <MudIcon Icon="@Icons.Material.Filled.EditNote" Size="Size.Large" />
+            </MudAvatar>
+            <div>
+                <MudText Typo="Typo.h4" Class="font-weight-bold gradient-text">
+                    Editar Publicação
+                </MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-1">
+                    Atualize as informações da publicação existente
+                </MudText>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <EditForm Model="@_editModel" OnValidSubmit="HandleValidSubmit">
+        <MudGrid Spacing="4" Justify="Justify.FlexStart">
+            <!-- Nome da Publicação -->
+            <MudItem xs="12">
+                <MudCard Class="h-100 hover-card" Elevation="1" Style="border-radius: 12px; transition: all 0.3s ease;">
+                    <MudCardContent Class="pa-5">
+                        <div class="d-flex align-center mb-4">
+                            <div class="icon-container mr-3" Style="padding: 10px; border-radius: 10px;">
+                                <MudIcon Icon="@Icons.Material.Filled.Title" Color="Color.Info" />
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Nome da Publicação</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Título principal da publicação</MudText>
+                            </div>
+                        </div>
+
+                        <MudTextField @bind-Value="_editModel.ReportName"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined"
+                                      FullWidth="true"
+                                      Placeholder="Ex: Relatório Anual de Diversidade 2024"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.ShortText"
+                                      Class="mb-3"
+                                      Label="Título"
+                                      Immediate="true"
+                                      Clearable="true" />
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Tipo da Publicação -->
+            <MudItem xs="12">
+                <MudCard >
+                    <MudCardContent >
+                        <div class="d-flex align-center mb-4">
+                            <div class="icon-container mr-3" Style="padding: 10px; border-radius: 10px;">
+                                <MudIcon Icon="@Icons.Material.Filled.Category" Color="Color.Info" />
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Categoria</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Classificação do conteúdo</MudText>
+                            </div>
+                        </div>
+
+                        <MudSelect T="string"
+                                   Label="Selecione uma categoria"
+                                   @bind-Value="_editModel.TypeReport"
+                                   Required="true"
+                                   Margin="Margin.Dense"
+                                   Variant="Variant.Outlined"
+                                   Class="mb-3"
+                                   FullWidth="true"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Filled.Label"
+                                   DisablePortal="true"
+                                   Immediate="true">
+                            @foreach (var tipo in tipos)
+                            {
+                                <MudSelectItem Value="@tipo" Class="d-flex align-center">
+                                    <MudIcon Icon="@GetTipoIcon(tipo)" Class="mr-2" Size="Size.Small" />
+                                    @tipo
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Descrição -->
+            <MudItem xs="12">
+                <MudCard Class="hover-card" Elevation="1" Style="border-radius: 12px; transition: all 0.3s ease;">
+                    <MudCardContent Class="pa-5">
+                        <div class="d-flex align-center mb-4">
+                            <div class="icon-container mr-3" Style="padding: 10px; border-radius: 10px;">
+                                <MudIcon Icon="@Icons.Material.Filled.Description" Color="Color.Info" />
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Conteúdo</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Descreva detalhadamente a publicação</MudText>
+                            </div>
+                        </div>
+
+                        <MudTextField @bind-Value="_editModel.ReportDescription"
+                                      Required="true"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Outlined"
+                                      FullWidth="true"
+                                      Lines="5"
+                                      Label="Descrição detalhada"
+                                      Placeholder="Descreva o conteúdo principal, objetivos e principais pontos da publicação..."
+                                      Immediate="true"
+                                      Class="mb-3" />
+
+                        <div class="d-flex justify-space-between align-center">
+                            <div class="d-flex align-center">
+                                <MudProgressCircular Value="@(_editModel.ReportDescription?.Length * 100 / 500 ?? 0)"
+                                                     Color="@(_editModel.ReportDescription?.Length > 450 ? Color.Error : Color.Primary)"
+                                                     Size="Size.Medium"
+                                                     Class="mr-2" />
+                                <MudText Typo="Typo.caption" Color="@(_editModel.ReportDescription?.Length > 450 ? Color.Error : Color.Secondary)">
+                                    @_editModel.ReportDescription?.Length/500
+                                </MudText>
+                            </div>
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Informações Adicionais (Acordeão Moderno) -->
+            <MudItem xs="12">
+                <MudCard Class="mt-2" Elevation="0" Style="border: 1px solid var(--mud-palette-divider); border-radius: 12px;">
+                    <MudCardContent Class="pa-0">
+                        <MudExpansionPanels Class="rounded-lg" Elevation="0">
+                            <MudExpansionPanel Text="Informações do Sistema"
+                                               Icon="@Icons.Material.Filled.Storage"
+                                               IconColor="Color.Info"
+                                               Class="rounded-lg">
+                                <MudGrid Spacing="3" Class="pa-4">
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudPaper Class="pa-4 rounded-lg info-card" Elevation="0">
+                                            <div class="d-flex align-center">
+                                                <MudAvatar Color="Color.Info" Variant="Variant.Filled" Size="Size.Small" Class="mr-3">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                                                </MudAvatar>
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Criado por</MudText>
+                                                    <MudText Typo="Typo.body1" Class="font-weight-bold">@Report.UserName</MudText>
+                                                </div>
+                                            </div>
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudPaper Class="pa-4 rounded-lg info-card" Elevation="0">
+                                            <div class="d-flex align-center">
+                                                <MudAvatar Color="Color.Success" Variant="Variant.Filled" Size="Size.Small" Class="mr-3">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Event" />
+                                                </MudAvatar>
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Data de criação</MudText>
+                                                    <MudText Typo="Typo.body1" Class="font-weight-bold">@Report.ReportsDate.ToString("dd/MM/yyyy")</MudText>
+                                                </div>
+                                            </div>
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudPaper Class="pa-4 rounded-lg info-card" Elevation="0">
+                                            <div class="d-flex align-center">
+                                                <MudAvatar Color="@(Report.Actived? Color.Success: Color.Error)"
+                                                           Variant="Variant.Filled"
+                                                           Size="Size.Small"
+                                                           Class="mr-3">
+                                                    <MudIcon Icon="@(Report.Actived? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Cancel)" />
+                                                </MudAvatar>
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Status</MudText>
+                                                    <MudText Typo="Typo.body1" Class="font-weight-bold">
+                                                        @(Report.Actived ? "Publicado" : "Rascunho")
+                                                    </MudText>
+                                                </div>
+                                            </div>
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudPaper Class="pa-4 rounded-lg info-card" Elevation="0">
+                                            <div class="d-flex align-center">
+                                                <MudAvatar Color="Color.Warning" Variant="Variant.Filled" Size="Size.Small" Class="mr-3">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Update" />
+                                                </MudAvatar>
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Última atualização</MudText>
+                                                    <MudText Typo="Typo.body1" Class="font-weight-bold">
+                                                        @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                                                    </MudText>
+                                                </div>
+                                            </div>
+                                        </MudPaper>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Action Buttons -->
+            <MudItem xs="12">
+                <div class="d-flex justify-space-between align-center mt-6 pt-4 border-t">
+                    <MudTooltip Text="Descartar todas as alterações">
+                        <MudButton Color="Color.Secondary"
+                                   Variant="Variant.Outlined"
+                                   OnClick="Cancel"
+                                   StartIcon="@Icons.Material.Filled.Close"
+                                   Class="px-5"
+                                   Style="border-radius: 8px;"
+                                   FullWidth="false">
+                            Cancelar
+                        </MudButton>
+                    </MudTooltip>
+
+                    <MudTooltip Text="Salvar todas as alterações">
+                        <MudButton Color="Color.Primary"
+                                   Variant="Variant.Filled"
+                                   ButtonType="ButtonType.Submit"
+                                   StartIcon="@Icons.Material.Filled.Save"
+                                   Class="px-6 shadow-lg ml-3"
+                                   Style="border-radius: 8px;"
+                                   Disabled="@(!IsFormValid())"
+                                   EndIcon="@(_isLoading ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Check)"
+                                   FullWidth="false">
+                            <MudText Class="font-weight-bold">
+                                @(_isLoading ? "Salvando..." : "Salvar Alterações")
+                            </MudText>
+                        </MudButton>
+                    </MudTooltip>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudPaper>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public Report Report { get; set; } = null!;
+
+    private Report _editModel = new();
+    private bool _isLoading = false;
+
+    protected override void OnInitialized()
+    {
+        _editModel = new Report(
+            Report.ReportName,
+            Report.TypeReport,
+            Report.ReportDescription,
+            Report.ReportsDate,
+            Report.UserName,
+            Report.IsEvent,
+            Report.Actived,
+            Report.ApplicationUserId
+        )
+        {
+            Id = Report.Id
+        };
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task HandleValidSubmit()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        await Task.Delay(500);
+
+        MudDialog.Close(DialogResult.Ok(_editModel));
+        _isLoading = false;
+    }
+
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(_editModel.ReportName) &&
+               !string.IsNullOrWhiteSpace(_editModel.TypeReport) &&
+               !string.IsNullOrWhiteSpace(_editModel.ReportDescription) &&
+               _editModel.ReportName.Length <= 100 &&
+               _editModel.ReportDescription.Length <= 500;
+    }
+
+    private string GetTipoIcon(string tipo)
+    {
+        return tipo switch
+        {
+            "Racismo" => Icons.Material.Filled.Diversity3,
+            "Discriminação Feminina" => Icons.Material.Filled.Female,
+            "Discriminação LGBT" => Icons.Material.Filled.Diversity1,
+            _ => Icons.Material.Filled.Label
+        };
+    }
+
+    private List<string> tipos = new()
+    {
+        "Racismo",
+        "Discriminação Feminina",
+        "Discriminação LGBT"
+    };
+}
+

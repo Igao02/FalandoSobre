@@ -1,26 +1,40 @@
-﻿.post-image {
-    transition: transform 0.3s ease;
+﻿/* Imagens do post */
+.post-image {
+    transition: scale 0.3s ease;
     cursor: pointer;
 }
 
-.post-image:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+    .post-image:hover {
+        scale: 1.02;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
+/* Fade-in sem transform */
 .fade-in {
     animation: fadeIn 0.5s ease-in;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Card hover sem transform */
 .card-hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
     .card-hover:hover {
-        transform: translateY(-8px);
+        margin-top: -8px; /* substitui translateY */
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
     }
 
+/* Galeria */
 .image-gallery {
     display: grid;
     gap: 8px;
@@ -50,46 +64,39 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
+/* Comentários */
 .comment-section {
     background: linear-gradient(180deg, rgba(250,250,250,0.95) 0%, rgba(255,255,255,0.95) 100%);
     border-top: 1px solid rgba(0,0,0,0.05);
 }
 
+/* Avatar sem transform */
 .profile-avatar {
     border: 3px solid #fff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    transition: scale 0.3s ease;
 }
 
     .profile-avatar:hover {
-        transform: scale(1.05);
+        scale: 1.05;
     }
 
+/* Botão curtido */
 .like-button.active {
     background: rgba(93, 95, 239, 0.1);
 }
 
+/* Gradiente */
 .gradient-bg {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+/* Animação pulse sem transform */
 .pulse-animation {
     animation: pulse 2s infinite;
 }
 
-@@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@@keyframes pulse {
+@keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(93, 95, 239, 0.4);
     }
@@ -103,6 +110,7 @@
     }
 }
 
+/* Header fixo */
 .sticky-header {
     position: sticky;
     top: 0;

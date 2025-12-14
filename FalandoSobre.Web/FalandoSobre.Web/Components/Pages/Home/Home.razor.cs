@@ -1,6 +1,7 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Web.Components.Pages.Home.Dialogs;
+using FalandoSobre.Web.Components.Pages.Home.Dialogs.EditReport;
 using FalandoSobreApplication.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
