@@ -18,7 +18,11 @@ public class ReportRepository : IReportRepository
 
     public async Task<PagedResponse<List<Report>>> GetListAsync(PagedRequest request)
     {
-        var query = _context.Reports.OrderByDescending(r => r.ReportsDate).AsQueryable();
+        // Apenas publicações ativas devem aparecer no feed
+        var query = _context.Reports
+            .Where(r => r.Actived)
+            .OrderByDescending(r => r.ReportsDate)
+            .AsQueryable();
 
         var totalItems = await query.CountAsync();
 
@@ -33,12 +37,16 @@ public class ReportRepository : IReportRepository
     public async Task<IEnumerable<Report>> GetReportsByTypeAsync(string type)
     {
         return await _context.Reports
-            .Where(r => r.TypeReport == type)
+            .Where(r => r.TypeReport == type && r.Actived)
             .OrderByDescending(r => r.ReportsDate)
             .ToListAsync();
     }
 
-    public async Task<Report?> GetAsync(Guid id) => await _context.Reports.FindAsync(id);
+    public async Task<Report?> GetAsync(Guid id) => await _context.Reports
+        .Include(r => r.Comments)
+        .Include(r => r.Likes)
+        .Include(r => r.Images)
+        .FirstOrDefaultAsync(r => r.Id == id);
 
     public async Task<Report> AddAsync(Report report)
     {
@@ -49,9 +57,33 @@ public class ReportRepository : IReportRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var report = await GetAsync(id);
+        var report = await _context.Reports
+            .Include(r => r.Comments)
+            .Include(r => r.Likes)
+            .Include(r => r.Images)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
-        _context.Reports.Remove(report!);
+        if (report is null)
+        {
+            return;
+        }
+
+        report.Actived = false;
+
+        foreach (var comment in report.Comments)
+        {
+            comment.Actived = false;
+        }
+
+        foreach (var like in report.Likes)
+        {
+            like.Actived = false;
+        }
+
+        foreach (var image in report.Images)
+        {
+            image.Actived = false;
+        }
 
         await _context.SaveChangesAsync();
     }
