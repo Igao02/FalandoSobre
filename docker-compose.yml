@@ -13,22 +13,6 @@ services:
     networks:
       - sqlserver-network
 
-  falandosobre.web:
-    build:
-      context: .
-      dockerfile: FalandoSobre.Web/FalandoSobre.Web/Dockerfile
-    container_name: webapp_container
-    ports:
-      - "7248:8080"
-    environment:
-      - ASPNETCORE_URLS=http://+:8080
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=db;Database=master;User Id=sa;Password=SqlServer123!;TrustServerCertificate=true;
-    depends_on:
-      - db
-    restart: unless-stopped
-    networks:
-      - sqlserver-network
 
 networks:
   sqlserver-network:

@@ -154,21 +154,24 @@ dotnet run
 # CONFIGURAÇÃO FINAL
 # ==============================================
 
-## Arquitetura de Portas:
+## Arquitetura de Desenvolvimento (SIMPLIFICADA - Dezembro 2024):
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Front-end     │    │       API       │    │   SQL Server    │
-│   (Docker)      │◄──►│     (Local)     │◄──►│    (Docker)     │
-│  localhost:7248 │    │ localhost:7249  │    │ localhost:14333 │
+│   Front-end     │    │    API REST    │    │   SQL Server    │
+│   (Local)       │◄──►│    (Local)     │◄──►│    (Docker)     │
+│  localhost:7188 │    │ localhost:7249  │    │ localhost:14333 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+       │                       │                       │
+       └────── Acesso direto ───────────────────────┘
+          (Front-end também acessa banco diretamente)
 ```
 
 ## Ambientes:
-- **Development (Local):** API conecta via localhost:14333
-- **Production (Docker):** Aplicações conectam via hostname 'db'
+- **Development (Atual):** Apenas banco no Docker, API e Web rodam local
+- **Production (Futuro):** Todos os serviços containerizados
 
 ## Arquivos Modificados:
-1. docker-compose.yml → Porta 7248 para front-end
+1. docker-compose.yml → Apenas banco de dados
 2. appsettings.json → Connection string com tcp:localhost
 3. appsettings.Development.json → Connection string para desenvolvimento
 4. Certificado HTTPS → Tornado confiável
@@ -186,8 +189,9 @@ docker ps
 netstat -ano | findstr :7249
 
 # 3. Portas corretas:
-netstat -ano | findstr :7248   # Front-end
-netstat -ano | findstr :14333  # SQL Server
+netstat -ano | findstr :7188   # Front-end (local)
+netstat -ano | findstr :7249   # API (local)
+netstat -ano | findstr :14333  # SQL Server (Docker)
 
 # 4. Test HTTPS da API:
 curl -k https://localhost:7249
@@ -227,3 +231,55 @@ curl -k https://localhost:7249
 ✅ **Certificados HTTPS** precisam ser confiáveis para desenvolvimento
 ✅ **Processos em execução** podem bloquear builds
 ✅ **TCP/IP explícito** evita problemas de Named Pipes no Windows
+
+# ==============================================
+# PASSO 7: DECISÃO DE ARQUITETURA (Dezembro 2024)
+# ==============================================
+
+## 7.1 Configuração escolhida: APENAS BANCO NO DOCKER
+
+### Por que apenas o banco?
+✅ **Hot reload** funciona perfeitamente (dotnet watch)
+✅ **Debug fácil** no Visual Studio/Rider
+✅ **Build instantâneo** sem rebuild de imagens Docker
+✅ **Logs mais claros** direto no console
+✅ **Menos consumo** de CPU e memória
+✅ **Desenvolvimento mais rápido** e produtivo
+
+### Quando usar Docker completo (Front + API + Banco)?
+- Testes de integração em ambiente similar a produção
+- Deploy em servidor/cloud
+- Demonstrações para cliente
+- CI/CD pipelines
+
+## 7.2 Como rodar o projeto:
+
+### 1. Subir apenas o banco:
+```bash
+cd /c/Users/Igao/FalandoSobre/src
+docker-compose up -d
+```
+
+### 2. Rodar a API localmente:
+```bash
+cd /c/Users/Igao/FalandoSobre/src/FalandoSobre.Api
+dotnet run
+# Disponível em: https://localhost:7249
+```
+
+### 3. Rodar o Front-end localmente:
+```bash
+cd /c/Users/Igao/FalandoSobre/src/FalandoSobre.Web/FalandoSobre.Web
+dotnet run
+# Disponível em: https://localhost:7188
+```
+
+## 7.3 Portas finais:
+- 🌐 **Front-end**: https://localhost:7188 (local)
+- 🚀 **API**: https://localhost:7249 (local)
+- 🗄️ **SQL Server**: localhost:14333 (Docker)
+
+## 7.4 Arquivos do Docker mantidos:
+- **docker-compose.yml**: Apenas serviço 'db'
+- **Dockerfiles**: Mantidos para uso futuro (produção)
+- **docker-compose.override.yml**: Removido (causava conflito)

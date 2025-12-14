@@ -28,8 +28,8 @@ docker-compose up -d
 # Iniciar apenas o banco de dados:
 docker-compose up -d db
 
-# Iniciar apenas o front-end web:
-docker-compose up -d falandosobre.web
+# NOTA: Atualmente apenas o banco de dados está configurado no Docker
+# Front-end e API rodam localmente para facilitar o desenvolvimento
 
 # Parar todos os containers:
 docker-compose down
@@ -37,17 +37,15 @@ docker-compose down
 # Parar e remover volumes (CUIDADO - apaga dados do banco):
 docker-compose down -v
 
-# Reiniciar um container específico:
-docker-compose restart falandosobre.web
+# Reiniciar o container do banco:
 docker-compose restart db
 
 # ==============================================
 # LOGS E DEBUG
 # ==============================================
 
-# Ver logs de um container:
+# Ver logs do banco de dados:
 docker logs sqlserver_container
-docker logs webapp_container
 
 # Ver logs em tempo real (follow):
 docker logs -f sqlserver_container
@@ -62,8 +60,6 @@ docker logs --tail 10 sqlserver_container
 # Executar comando dentro do container SQL Server:
 docker exec -it sqlserver_container bash
 
-# Executar comando dentro do container Web:
-docker exec -it webapp_container bash
 
 # Conectar ao SQL Server via sqlcmd (dentro do container):
 docker exec -it sqlserver_container /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SqlServer123!' -C
@@ -72,23 +68,16 @@ docker exec -it sqlserver_container /opt/mssql-tools18/bin/sqlcmd -S localhost -
 # REBUILD E ATUALIZAÇÃO
 # ==============================================
 
-# Rebuildar as imagens (após mudanças no código):
-docker-compose build
-
-# Rebuildar e iniciar:
-docker-compose up -d --build
-
-# Rebuildar apenas o front-end:
-docker-compose build falandosobre.web
+# Não é necessário rebuild (banco usa imagem pronta da Microsoft)
 
 # ==============================================
 # TROUBLESHOOTING
 # ==============================================
 
 # Verificar portas em uso no Windows:
-netstat -ano | findstr :7248    # Front-end
-netstat -ano | findstr :14333   # SQL Server
-netstat -ano | findstr :7249    # API (não deveria aparecer aqui)
+netstat -ano | findstr :7188    # Front-end (local)
+netstat -ano | findstr :7249    # API (local)
+netstat -ano | findstr :14333   # SQL Server (Docker)
 
 # Parar processo específico (se necessário):
 taskkill //PID NUMERO_PID //F
@@ -103,14 +92,22 @@ docker container prune
 # CONFIGURAÇÃO ATUAL DO PROJETO
 # ==============================================
 
-# Portas configuradas:
-# - Front-end (Docker): localhost:7248
-# - SQL Server (Docker): localhost:14333
-# - API (Local): localhost:7249
+# Arquitetura de Desenvolvimento:
+# - SQL Server: Docker (localhost:14333)
+# - API: Local via dotnet run (localhost:7249)
+# - Front-end: Local via dotnet run (localhost:7188)
+
+# Por que apenas banco no Docker?
+# ✅ Desenvolvimento mais rápido (sem rebuild)
+# ✅ Hot reload funciona perfeitamente
+# ✅ Debug fácil no Visual Studio/Rider
+# ✅ Logs mais claros no console
+# ✅ Menos consumo de recursos
 
 # Acessos:
-# - Front-end: http://localhost:7248
-# - SQL Server: localhost,14333 (via connection string)
+# - Front-end: https://localhost:7188 (roda local)
+# - API REST: https://localhost:7249 (roda local)
+# - SQL Server: localhost,14333 (Docker)
 
 # ==============================================
 # BACKUP E RESTORE (OPCIONAL)
