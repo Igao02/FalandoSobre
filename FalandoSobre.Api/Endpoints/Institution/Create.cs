@@ -46,7 +46,6 @@ public sealed class CreateInstitutionEndpoint : IEndpoint
             );
         })
         .WithName("CreateInstitution")
-        .WithTags("Institutions")
-        .WithOpenApi();
+        .WithTags("Institutions");
     }
 }

@@ -18,7 +18,6 @@ public sealed class ListByReportId : IEndpoint
                 return result.Match(value => Results.Ok(value), CustomResults.SimpleError);
             })
             .WithName("ImageListByReportId")
-            .WithTags("Images")
-            .WithOpenApi();
+            .WithTags("Images");
     }
 }

@@ -23,7 +23,7 @@ public sealed class CreateReportEndpoint : IEndpoint
                 request.Actived,
                 request.ApplicationUserId);
 
-            Result <CreateReportResponse> result = await sender.Send(command, cancellationToken);
+            Result<CreateReportResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(
                 value => Results.Ok(value),
                 CustomResults.SimpleError
@@ -31,8 +31,6 @@ public sealed class CreateReportEndpoint : IEndpoint
 
         })
         .WithName("CreateReport")
-        .WithTags("Reports")
-        .WithOpenApi();  
-
+        .WithTags("Reports"); 
     }
 }

@@ -1,8 +1,9 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
-using FalandoSobre.Web.Components.Pages.Home.Dialogs;
 using FalandoSobre.Web.Components.Pages.Home.Dialogs.EditReport;
-using FalandoSobreApplication.Interfaces;
+using FalandoSobreApplication.Interfaces.Comments;
+using FalandoSobreApplication.Interfaces.Likes;
+using FalandoSobreApplication.Interfaces.Reports;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -12,35 +13,27 @@ namespace FalandoSobre.Web.Components.Pages.Home;
 
 public class HomePage : ComponentBase
 {
-    [Inject] public IReportAppService ReportAppService { get; set; } = null!;
-    [Inject] public IReportRepository ReportRepository { get; set; } = null!;
-    [Inject] public ILikeRepository LikeRepository { get; set; } = null!;
-    [Inject] public ICommentRepository CommentRepository { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
+    [Inject] public IReportAppService ReportAppService { get; set; } = null!;
+    [Inject] public ILikeAppService LikeAppService { get; set; } = null!;
+    [Inject] public ICommentAppService CommentAppService { get; set; } = null!;
+    [Inject] public IReportRepository ReportRepository { get; set; } = null!;
     [Inject] public IDialogService DialogService { get; set; } = null!;
+    [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
 
-    protected List<Report> Model { get; set; } = new();
-    protected List<UserInfo> ModelUserInfo { get; set; } = new();
-    protected Like ModelLike { get; set; } = new();
-    protected HashSet<Guid> LikedReportIds { get; set; } = new();
-    protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new();
-
- 
-    protected Dictionary<Guid, List<Comment>> ReportComments { get; set; } = new();
-    protected Dictionary<Guid, string> NewCommentText { get; set; } = new();
-    protected HashSet<Guid> OpenCommentsForReports { get; set; } = new();
+    protected List<Report> Model { get; set; } = new()!;
+    protected List<UserInfo> ModelUserInfo { get; set; } = new()!;
+    protected HashSet<Guid> LikedReportIds { get; set; } = new()!;
+    protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new()!;
 
     protected string? CurrentUserId { get; set; }
-
     private int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
-
+    
     public bool isLoading = false;
-    public string successMessage = string.Empty;
-    public string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,7 +60,6 @@ public class HomePage : ComponentBase
     private async Task LoadDataAsync()
     {
         isLoading = true;
-        successMessage = errorMessage = string.Empty;
 
         try
         {
@@ -75,11 +67,11 @@ public class HomePage : ComponentBase
             ModelUserInfo = await ReportAppService.GetProfilePhotosAsync(Model);
             await LoadUserLikesAsync();
             await LoadLikeCountsAsync();
-            await LoadCommentsAsync();
+            await CommentAppService.LoadAsync(Model);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao carregar os dados: {ex.Message}";
+            Snackbar.Add($"Erro ao carregar os dados: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -91,58 +83,46 @@ public class HomePage : ComponentBase
     protected async Task ToggleLikeAsync(Guid reportId)
     {
         isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
 
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        if (string.IsNullOrEmpty(CurrentUserId))
+        {
+            Snackbar.Add("Usuário não encontrado.", Severity.Error);
+            return;
+        }
+
         try
         {
-            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdString))
+            var alreadyLiked = LikedReportIds.Contains(reportId);
+
+            var success = await LikeAppService.ToggleLikeAsync(
+                CurrentUserId,
+                reportId,
+                alreadyLiked
+            );
+
+            if (!success)
             {
-                errorMessage = "Usuário não encontrado.";
+                Snackbar.Add("Erro ao processar like.", Severity.Error);
                 return;
             }
 
-            if (LikedReportIds.Contains(reportId))
+            if (alreadyLiked)
             {
-                var handler = LikeRepository as Handlers.LikeHandler;
-                if (handler != null)
-                {
-                    var removed = await handler.RemoveLikeAsync(userIdString, reportId);
-                    if (removed)
-                    {
-                        successMessage = "Like removido com sucesso!";
-                        LikedReportIds.Remove(reportId);
-                        if (ReportLikeCounts.ContainsKey(reportId))
-                        {
-                            ReportLikeCounts[reportId]--;
-                        }
-                    }
-                }
+                LikedReportIds.Remove(reportId);
+                ReportLikeCounts[reportId]--;
             }
             else
             {
-                
-                ModelLike.ReportId = reportId;
-                ModelLike.ApplicationUserId = userIdString;
-                await LikeRepository.AddLikesAsync(ModelLike);
-                successMessage = "Like adicionado com sucesso!";
                 LikedReportIds.Add(reportId);
-                if (ReportLikeCounts.ContainsKey(reportId))
-                {
-                    ReportLikeCounts[reportId]++;
-                }
-                else
-                {
-                    ReportLikeCounts[reportId] = 1;
-                }
+                ReportLikeCounts[reportId] =
+                    ReportLikeCounts.TryGetValue(reportId, out var count)
+                        ? count + 1
+                        : 1;
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao processar like: {ex.Message}";
+            Snackbar.Add($"Erro ao processar like: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -151,41 +131,26 @@ public class HomePage : ComponentBase
         }
     }
 
+
     protected string? GetProfilePhoto(string userId) =>
         ModelUserInfo.FirstOrDefault(u => u.ApplicationUserId == userId)?.ProfilePhoto;
 
     private async Task LoadUserLikesAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(CurrentUserId))
+            return;
 
-        if (!string.IsNullOrEmpty(userIdString))
-        {
-            var userLikes = await LikeRepository.GetLikesByUserIdAsync(userIdString);
-            LikedReportIds = userLikes.Select(like => like.ReportId).ToHashSet();
-        }
+        var likedReports = await LikeAppService.GetLikedReportsByUserAsync(CurrentUserId);
+        LikedReportIds = likedReports.ToHashSet();
     }
+
 
     private async Task LoadLikeCountsAsync()
     {
         foreach (var report in Model)
         {
-            var likes = await LikeRepository.GetLikesByReportIdAsync(report.Id);
-            ReportLikeCounts[report.Id] = likes.Count();
-        }
-    }
-
-    private async Task LoadCommentsAsync()
-    {
-        ReportComments.Clear();
-        NewCommentText.Clear();
-
-        foreach (var report in Model)
-        {
-            var comments = await CommentRepository.GetByReportIdAsync(report.Id);
-            ReportComments[report.Id] = comments.OrderByDescending(c => c.CommentDate).ToList();
-            NewCommentText[report.Id] = string.Empty;
+            ReportLikeCounts[report.Id] =
+                await LikeAppService.GetLikeCountAsync(report.Id);
         }
     }
 
@@ -194,60 +159,19 @@ public class HomePage : ComponentBase
     protected int GetLikeCount(Guid reportId) => ReportLikeCounts.ContainsKey(reportId) ? ReportLikeCounts[reportId] : 0;
 
     protected void ToggleComments(Guid reportId)
-    {
-        if (OpenCommentsForReports.Contains(reportId))
-            OpenCommentsForReports.Remove(reportId);
-        else
-            OpenCommentsForReports.Add(reportId);
-    }
+        => CommentAppService.Toggle(reportId);
 
     protected async Task AddCommentAsync(Guid reportId)
     {
-        if (!NewCommentText.TryGetValue(reportId, out var text) || string.IsNullOrWhiteSpace(text))
-        {
-            errorMessage = "Digite um comentário antes de enviar.";
-            return;
-        }
-
         isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
-
         try
         {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-
-            var userName = user.Identity?.Name ?? "Anônimo";
-            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdString))
-            {
-                errorMessage = "Usuário não encontrado.";
-                return;
-            }
-
-            var comment = new Comment
-            {
-                CommentContent = text,
-                CommentDate = DateTime.UtcNow,
-                ReportId = reportId,
-                UserName = userName,
-                ApplicationUserId = userIdString,
-            };
-
-            var created = await CommentRepository.AddAsync(comment);
-
-            if (!ReportComments.ContainsKey(reportId))
-                ReportComments[reportId] = new List<Comment>();
-
-            ReportComments[reportId].Insert(0, created);
-            NewCommentText[reportId] = string.Empty;
-
-            successMessage = "Comentário enviado com sucesso!";
+            await CommentAppService.AddAsync(reportId);
+            Snackbar.Add("Comentário adicionado!", Severity.Success);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao enviar comentário: {ex.Message}";
+            Snackbar.Add($"Não foi possível adicionar o comentário: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -259,45 +183,13 @@ public class HomePage : ComponentBase
     protected async Task DeleteCommentAsync(Guid reportId, Guid commentId)
     {
         isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
-
         try
         {
-            if (string.IsNullOrEmpty(CurrentUserId))
-            {
-                errorMessage = "Usuário não encontrado.";
-                return;
-            }
-
-            if (!ReportComments.TryGetValue(reportId, out var commentsForReport))
-            {
-                errorMessage = "Comentário não encontrado.";
-                return;
-            }
-
-            var comment = commentsForReport.FirstOrDefault(c => c.Id == commentId);
-            if (comment is null)
-            {
-                errorMessage = "Comentário não encontrado.";
-                return;
-            }
-
-            if (comment.ApplicationUserId != CurrentUserId)
-            {
-                errorMessage = "Você não tem permissão para excluir este comentário.";
-                return;
-            }
-
-            await CommentRepository.DeleteAsync(commentId);
-
-            commentsForReport.Remove(comment);
-
-            successMessage = "Comentário excluído com sucesso!";
+            await CommentAppService.DeleteAsync(reportId, commentId);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao excluir comentário: {ex.Message}";
+            Snackbar.Add(ex.Message, Severity.Error);
         }
         finally
         {
@@ -308,41 +200,35 @@ public class HomePage : ComponentBase
 
     protected async Task DeleteReportAsync(Guid reportId)
     {
-        isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
-
         try
         {
             if (string.IsNullOrEmpty(CurrentUserId))
             {
-                errorMessage = "Usuário não encontrado.";
+                Snackbar.Add("Usuário não encontrado.", Severity.Error);
                 return;
             }
 
             var report = Model.FirstOrDefault(r => r.Id == reportId);
             if (report is null)
             {
-                errorMessage = "Publicação não encontrada.";
+                Snackbar.Add("Publicação não encontrada.", Severity.Error);
                 return;
             }
 
             if (report.ApplicationUserId != CurrentUserId)
             {
-                errorMessage = "Você não tem permissão para excluir esta publicação.";
+                Snackbar.Add("Você não tem permissão para excluir esta publicação.", Severity.Error);
                 return;
             }
 
             await ReportRepository.DeleteAsync(reportId);
-
-            // Remove da lista atual sem precisar recarregar a página inteira
             Model.Remove(report);
 
-            successMessage = "Publicação excluída com sucesso!";
+            Snackbar.Add("Publicação excluída com sucesso!", Severity.Success);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao excluir publicação: {ex.Message}";
+            Snackbar.Add($"Erro ao excluir publicação: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -355,15 +241,15 @@ public class HomePage : ComponentBase
     {
         if (string.IsNullOrEmpty(CurrentUserId) || report.ApplicationUserId != CurrentUserId)
         {
-            errorMessage = "Você não tem permissão para editar esta publicação.";
+            Snackbar.Add("Você não tem permissão para editar esta publicação.", Severity.Error);
             StateHasChanged();
             return;
         }
 
         var parameters = new DialogParameters
-    {
-        { nameof(EditReportDialog.Report), report }
-    };
+        {
+            { nameof(EditReportDialog.Report), report }
+        };
 
         var options = new DialogOptions
         {
@@ -392,21 +278,18 @@ public class HomePage : ComponentBase
     private async Task SaveEditedReportAsync(Report editedReport)
     {
         isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
-
         try
         {
             var existing = Model.FirstOrDefault(r => r.Id == editedReport.Id);
             if (existing is null)
             {
-                errorMessage = "Publicação não encontrada.";
+                Snackbar.Add("Publicação não encontrada.", Severity.Error);
                 return;
             }
 
             if (string.IsNullOrEmpty(CurrentUserId) || existing.ApplicationUserId != CurrentUserId)
             {
-                errorMessage = "Você não tem permissão para editar esta publicação.";
+                Snackbar.Add("Você não tem permissão para editar esta publicação.", Severity.Error);
                 return;
             }
 
@@ -423,11 +306,11 @@ public class HomePage : ComponentBase
             existing.TypeReport = updated.TypeReport;
             existing.ReportDescription = updated.ReportDescription;
 
-            successMessage = "Publicação atualizada com sucesso!";
+            Snackbar.Add("Publicação atualizada com sucesso!", Severity.Success);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Erro ao atualizar publicação: {ex.Message}";
+            Snackbar.Add($"Erro ao atualizar publicação: {ex.Message}", Severity.Error);
         }
         finally
         {

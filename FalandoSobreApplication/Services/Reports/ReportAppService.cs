@@ -1,17 +1,15 @@
 ﻿using FalandoSobre.Domain.Dto.PagedRequest;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
-using FalandoSobreApplication.Interfaces;
+using FalandoSobreApplication.Interfaces.Reports;
 
-namespace FalandoSobreApplication.Services;
+namespace FalandoSobreApplication.Services.Reports;
 
 public class ReportAppService(IReportRepository reportRepo, IImageRepository imageRepo, IUserInfoRepository userRepo) : IReportAppService
 {
     private readonly IReportRepository _reportRepository = reportRepo;
     private readonly IImageRepository _imageRepository = imageRepo;
     private readonly IUserInfoRepository _userInfoRepository = userRepo;
-
-   
 
     public async Task<List<UserInfo>> GetProfilePhotosAsync(List<Report> reports)
     {

@@ -1,6 +1,6 @@
 ﻿using FalandoSobre.Domain.Entities;
 
-namespace FalandoSobreApplication.Interfaces;
+namespace FalandoSobreApplication.Interfaces.Reports;
 
 public interface IReportAppService
 {

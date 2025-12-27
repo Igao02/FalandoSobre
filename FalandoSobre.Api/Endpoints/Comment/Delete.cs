@@ -21,7 +21,6 @@ public sealed class DeleteCommentEndpoint : IEndpoint
             );
         })
         .WithName("DeleteComment")
-        .WithTags("Comment")
-        .WithOpenApi();
+        .WithTags("Comment");
     }
 }

@@ -27,8 +27,6 @@ public sealed class CreateUserInfoEndpoint : IEndpoint
             );
         })
         .WithName("CreateUserInfo")
-        .WithTags("UserInfo")
-        .WithOpenApi();
-
+        .WithTags("UserInfo");
     }
 }

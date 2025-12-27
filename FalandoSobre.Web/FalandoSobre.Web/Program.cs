@@ -3,17 +3,34 @@ using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
 using FalandoSobre.Web.Handlers;
-using FalandoSobreApplication.Interfaces;
-using FalandoSobreApplication.Services;
+using FalandoSobreApplication.Interfaces.Comments;
+using FalandoSobreApplication.Interfaces.Likes;
+using FalandoSobreApplication.Interfaces.Reports;
+using FalandoSobreApplication.Services.Comments;
+using FalandoSobreApplication.Services.Likes;
+using FalandoSobreApplication.Services.Reports;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 10000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -49,6 +66,9 @@ builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
 builder.Services.AddTransient<ILikeRepository, LikeHandler>();
 builder.Services.AddTransient<ICommentRepository, CommentHandler>();
 builder.Services.AddTransient<IReportAppService, ReportAppService>();
+builder.Services.AddTransient<ILikeAppService, LikeAppService>(); 
+builder.Services.AddScoped<ICommentAppService, CommentAppService>();
+
 
 builder.Services.AddAuthentication(options =>
     {

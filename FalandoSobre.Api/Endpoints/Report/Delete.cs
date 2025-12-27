@@ -21,7 +21,6 @@ public sealed class DeleteReportEndpoint : IEndpoint
             );
         })
         .WithName("DeleteReport")
-        .WithTags("Reports")
-        .WithOpenApi();
+        .WithTags("Reports");
     }
 }
