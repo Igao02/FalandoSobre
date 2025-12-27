@@ -19,7 +19,6 @@ public sealed class GetByUserId : IEndpoint
                 return result.Match(value => Results.Ok(value), CustomResults.SimpleError);
             })
             .WithName("GetByUserId")
-            .WithTags("UserInfo")
-            .WithOpenApi();
+            .WithTags("UserInfo");
     }
 }

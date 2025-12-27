@@ -28,7 +28,6 @@ public sealed class EditReportEndpoint : IEndpoint
             );
         })
         .WithName("EditReport")
-        .WithTags("Reports")
-        .WithOpenApi();
+        .WithTags("Reports");
     }
 }

@@ -21,7 +21,6 @@ public sealed class ListLikesByReportIdEndpoint : IEndpoint
             );
         })
         .WithName("ListLikesByReportId")
-        .WithTags("Like")
-        .WithOpenApi();
+        .WithTags("Like");
     }
 }

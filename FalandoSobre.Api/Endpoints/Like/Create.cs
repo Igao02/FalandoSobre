@@ -19,14 +19,13 @@ public sealed class CreateLikeEndpoint : IEndpoint
                 request.ReportId,
                 request.ApplicationUserId);
 
-                Result<LikeResponse> result = await sender.Send(command, cancellationToken);
-                return result.Match(
-                    value => Results.Ok(value),
-                    CustomResults.SimpleError
-            );
+            Result<LikeResponse> result = await sender.Send(command, cancellationToken);
+            return result.Match(
+                value => Results.Ok(value),
+                CustomResults.SimpleError
+        );
         })
         .WithName("CreateLike")
-        .WithTags("Like")
-        .WithOpenApi();
+        .WithTags("Like");
     }
 }

@@ -3,8 +3,10 @@ using FalandoSobre.Web.Components;
 using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
 using FalandoSobre.Web.Handlers;
-using FalandoSobreApplication.Interfaces;
-using FalandoSobreApplication.Services;
+using FalandoSobreApplication.Interfaces.Likes;
+using FalandoSobreApplication.Interfaces.Reports;
+using FalandoSobreApplication.Services.Likes;
+using FalandoSobreApplication.Services.Reports;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +51,7 @@ builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
 builder.Services.AddTransient<ILikeRepository, LikeHandler>();
 builder.Services.AddTransient<ICommentRepository, CommentHandler>();
 builder.Services.AddTransient<IReportAppService, ReportAppService>();
+builder.Services.AddTransient<ILikeAppService, LikeAppService>(); 
 
 builder.Services.AddAuthentication(options =>
     {

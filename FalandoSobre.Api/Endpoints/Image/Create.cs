@@ -28,7 +28,6 @@ public sealed class CreateImageEndpoint : IEndpoint
             );
         })
             .WithName("CreateImage")
-            .WithTags("Images")
-            .WithOpenApi();
+            .WithTags("Images");
     }
 }

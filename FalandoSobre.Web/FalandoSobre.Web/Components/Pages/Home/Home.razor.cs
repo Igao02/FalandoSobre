@@ -1,8 +1,8 @@
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
-using FalandoSobre.Web.Components.Pages.Home.Dialogs;
 using FalandoSobre.Web.Components.Pages.Home.Dialogs.EditReport;
-using FalandoSobreApplication.Interfaces;
+using FalandoSobreApplication.Interfaces.Likes;
+using FalandoSobreApplication.Interfaces.Reports;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -14,22 +14,19 @@ public class HomePage : ComponentBase
 {
     [Inject] public IReportAppService ReportAppService { get; set; } = null!;
     [Inject] public IReportRepository ReportRepository { get; set; } = null!;
-    [Inject] public ILikeRepository LikeRepository { get; set; } = null!;
     [Inject] public ICommentRepository CommentRepository { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     [Inject] public IDialogService DialogService { get; set; } = null!;
+    [Inject] public ILikeAppService LikeAppService { get; set; } = null!;
 
 
-    protected List<Report> Model { get; set; } = new();
-    protected List<UserInfo> ModelUserInfo { get; set; } = new();
-    protected Like ModelLike { get; set; } = new();
-    protected HashSet<Guid> LikedReportIds { get; set; } = new();
-    protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new();
-
- 
-    protected Dictionary<Guid, List<Comment>> ReportComments { get; set; } = new();
-    protected Dictionary<Guid, string> NewCommentText { get; set; } = new();
-    protected HashSet<Guid> OpenCommentsForReports { get; set; } = new();
+    protected List<Report> Model { get; set; } = new()!;
+    protected List<UserInfo> ModelUserInfo { get; set; } = new()!;
+    protected HashSet<Guid> LikedReportIds { get; set; } = new()!;
+    protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new()!;
+    protected Dictionary<Guid, List<Comment>> ReportComments { get; set; } = new()!;
+    protected Dictionary<Guid, string> NewCommentText { get; set; } = new()!;
+    protected HashSet<Guid> OpenCommentsForReports { get; set; } = new()!;
 
     protected string? CurrentUserId { get; set; }
 
@@ -90,54 +87,43 @@ public class HomePage : ComponentBase
 
     protected async Task ToggleLikeAsync(Guid reportId)
     {
-        isLoading = true;
-        successMessage = string.Empty;
-        errorMessage = string.Empty;
+        if (string.IsNullOrEmpty(CurrentUserId))
+        {
+            errorMessage = "Usuário não encontrado.";
+            return;
+        }
 
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        isLoading = true;
+        successMessage = errorMessage = string.Empty;
+
         try
         {
-            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdString))
+            var alreadyLiked = LikedReportIds.Contains(reportId);
+
+            var success = await LikeAppService.ToggleLikeAsync(
+                CurrentUserId,
+                reportId,
+                alreadyLiked
+            );
+
+            if (!success)
             {
-                errorMessage = "Usuário não encontrado.";
+                errorMessage = "Erro ao processar like.";
                 return;
             }
 
-            if (LikedReportIds.Contains(reportId))
+            if (alreadyLiked)
             {
-                var handler = LikeRepository as Handlers.LikeHandler;
-                if (handler != null)
-                {
-                    var removed = await handler.RemoveLikeAsync(userIdString, reportId);
-                    if (removed)
-                    {
-                        successMessage = "Like removido com sucesso!";
-                        LikedReportIds.Remove(reportId);
-                        if (ReportLikeCounts.ContainsKey(reportId))
-                        {
-                            ReportLikeCounts[reportId]--;
-                        }
-                    }
-                }
+                LikedReportIds.Remove(reportId);
+                ReportLikeCounts[reportId]--;
             }
             else
             {
-                
-                ModelLike.ReportId = reportId;
-                ModelLike.ApplicationUserId = userIdString;
-                await LikeRepository.AddLikesAsync(ModelLike);
-                successMessage = "Like adicionado com sucesso!";
                 LikedReportIds.Add(reportId);
-                if (ReportLikeCounts.ContainsKey(reportId))
-                {
-                    ReportLikeCounts[reportId]++;
-                }
-                else
-                {
-                    ReportLikeCounts[reportId] = 1;
-                }
+                ReportLikeCounts[reportId] =
+                    ReportLikeCounts.TryGetValue(reportId, out var count)
+                        ? count + 1
+                        : 1;
             }
         }
         catch (Exception ex)
@@ -151,28 +137,26 @@ public class HomePage : ComponentBase
         }
     }
 
+
     protected string? GetProfilePhoto(string userId) =>
         ModelUserInfo.FirstOrDefault(u => u.ApplicationUserId == userId)?.ProfilePhoto;
 
     private async Task LoadUserLikesAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(CurrentUserId))
+            return;
 
-        if (!string.IsNullOrEmpty(userIdString))
-        {
-            var userLikes = await LikeRepository.GetLikesByUserIdAsync(userIdString);
-            LikedReportIds = userLikes.Select(like => like.ReportId).ToHashSet();
-        }
+        var likedReports = await LikeAppService.GetLikedReportsByUserAsync(CurrentUserId);
+        LikedReportIds = likedReports.ToHashSet();
     }
+
 
     private async Task LoadLikeCountsAsync()
     {
         foreach (var report in Model)
         {
-            var likes = await LikeRepository.GetLikesByReportIdAsync(report.Id);
-            ReportLikeCounts[report.Id] = likes.Count();
+            ReportLikeCounts[report.Id] =
+                await LikeAppService.GetLikeCountAsync(report.Id);
         }
     }
 
@@ -361,9 +345,9 @@ public class HomePage : ComponentBase
         }
 
         var parameters = new DialogParameters
-    {
-        { nameof(EditReportDialog.Report), report }
-    };
+        {
+            { nameof(EditReportDialog.Report), report }
+        };
 
         var options = new DialogOptions
         {

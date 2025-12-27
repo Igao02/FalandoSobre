@@ -21,7 +21,6 @@ public sealed class DeleteLikeEndpoint : IEndpoint
             );
         })
         .WithName("DeleteLike")
-        .WithTags("Like")
-        .WithOpenApi();
+        .WithTags("Like");
     }
 }

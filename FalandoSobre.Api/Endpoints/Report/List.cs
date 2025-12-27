@@ -26,7 +26,6 @@ public sealed class ListReportEndpoint : IEndpoint
             );
         })
         .WithName("ListReports")
-        .WithTags("Reports")
-        .WithOpenApi();
+        .WithTags("Reports");
     }
 }

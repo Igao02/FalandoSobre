@@ -28,7 +28,6 @@ public sealed class CreateCommentEndpoint : IEndpoint
             );
         })
         .WithName("CreateComment")
-        .WithTags("Comment")
-        .WithOpenApi();
+        .WithTags("Comment");
     }
 }

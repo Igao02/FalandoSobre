@@ -21,7 +21,6 @@ public sealed class ListCommentsByReportIdEndpoint : IEndpoint
             );
         })
         .WithName("ListCommentsByReportId")
-        .WithTags("Comment")
-        .WithOpenApi();
+        .WithTags("Comment");
     }
 }
