@@ -69,7 +69,8 @@
                             </div>
                         </div>
 
-                        <MudSelect T="string"
+                        @*Esse mudselect está todo cagado quando colocado dentro de outro componente*@
+                        @* <MudSelect T="string"
                                    Label="Selecione uma categoria"
                                    @bind-Value="_editModel.TypeReport"
                                    Required="true"
@@ -79,7 +80,6 @@
                                    FullWidth="true"
                                    Adornment="Adornment.Start"
                                    AdornmentIcon="@Icons.Material.Filled.Label"
-                                   DisablePortal="true"
                                    Immediate="true">
                             @foreach (var tipo in tipos)
                             {
@@ -88,7 +88,7 @@
                                     @tipo
                                 </MudSelectItem>
                             }
-                        </MudSelect>
+                        </MudSelect> *@
                     </MudCardContent>
                 </MudCard>
             </MudItem>

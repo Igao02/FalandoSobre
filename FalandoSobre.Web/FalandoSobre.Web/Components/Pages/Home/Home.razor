@@ -3,11 +3,23 @@
 @inherits HomePage
 @using MudBlazor
 
-<PageTitle>SocialFeed</PageTitle>
-
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+
+<PageTitle>Publicações</PageTitle>
+
+@* <MudGrid Justify="Justify.FlexEnd">
+	@if (!string.IsNullOrEmpty(successMessage))
+	{
+		<MudAlert Severity="Severity.Success">@successMessage</MudAlert>
+	}
+	@if (!string.IsNullOrEmpty(errorMessage))
+	{
+		<MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+	}
+</MudGrid> *@
+
 
 <MudContainer MaxWidth="MaxWidth.Large" Style="margin-top: 2rem; margin-bottom: 2rem;">
 	<MudGrid Spacing="3" Justify="Justify.Center">
@@ -18,37 +30,60 @@
 				{
 					<MudPaper Elevation="10" Class="card-hover"
 							  Style="border-radius: 24px; background: rgba(255,255,255,0.98);">
-
 						<!-- Cabeçalho da Publicação -->
 						<div Style="padding: 1.5rem 1.5rem 0 1.5rem;">
 							<MudGrid Spacing="2" AlignItems="AlignItems.Center">
-								<MudItem xs="2" Style="display: flex; justify-content: center;">
-									<MudAvatar Size="Size.Large" Class="profile-avatar pulse-animation">
+								<MudItem xs="2" md="1" Style="display: flex; justify-content: center;">
+									<MudAvatar Size="Size.Large" Class="profile-avatar pulse-animation"
+											   Style="width: 64px; height: 64px;">
 										<MudImage Src="@GetProfilePhoto(report.ApplicationUserId.ToString())"
 												  Alt="Foto de Perfil"
-												  Style="width: 100%; height: 100%; object-fit: cover;" />
+												  Style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
 									</MudAvatar>
 								</MudItem>
-								<MudItem xs="10">
-									<MudStack Gap="4px">
-										<MudText Typo="Typo.caption" Color="Color.Secondary">
-											<MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
-											<span style="font-weight: 500; color: #5D5FEF;">@report.UserName</span>
+								<MudItem xs="10" md="11">
+									<MudStack Gap="6px">
+										<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+											<MudText Typo="Typo.subtitle1" Style="font-weight: 700; color: #333;">
+												@report.UserName
+											</MudText>
 											@if (report.IsEvent == true)
 											{
-												<MudIcon Icon="@Icons.Material.Filled.Verified"
+												<MudChip T="string"
 														 Size="Size.Small"
-														 Style="color: #5D5FEF; margin-left: 4px;" />
+														 Color="Color.Primary"
+														 Variant="Variant.Filled"
+														 Class="ml-2"
+														 Style="font-size: 0.7rem;">
+													<MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Small" Class="mr-1" />
+													Evento
+												</MudChip>
+
 											}
+											<MudChip T="string"
+													 Size="Size.Small"
+													 Color="Color.Secondary"
+													 Variant="Variant.Outlined"
+													 Style="font-size: 0.7rem; margin-left: auto;">
+												@report.TypeReport
+											</MudChip>
+
+										</div>
+
+										<MudText Typo="Typo.h5" Style="font-weight: 800; color: #2D3748; margin: 4px 0;">
+											@report.ReportName
 										</MudText>
-										<MudText Typo="Typo.h6" Style="font-weight: 700; color: #333;" />
-										@report.ReportName
-										<MudText Typo="Typo.caption" Color="Color.Secondary">
-											<MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" />
-											@report.ReportsDate.ToString("dd MMM yyyy - HH:mm")
-											<MudIcon Icon="@Icons.Material.Filled.Public" Size="Size.Small" Style="margin-left: 12px;" />
-											Público
-										</MudText>
+
+										<div style="display: flex; align-items: center; gap: 16px; color: #718096;">
+											<MudText Typo="Typo.caption" Style="display: flex; align-items: center; gap: 4px;">
+												<MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" />
+												@report.ReportsDate.ToString("dd MMM yyyy - HH:mm")
+											</MudText>
+											<MudText Typo="Typo.caption" Style="display: flex; align-items: center; gap: 4px;">
+												<MudIcon Icon="@Icons.Material.Filled.Public" Size="Size.Small" />
+												Público
+											</MudText>
+										</div>
 									</MudStack>
 								</MudItem>
 							</MudGrid>
@@ -69,13 +104,13 @@
 										<MudImage Src="@image.ImageUrl"
 												  Class="post-image"
 												  Style="width: 100%; height: 100%;
-			                                                                        max-height: 400px;
-			                                                                        object-fit: cover;
-			                                                                        cursor: pointer;
-			                                                                        transition: transform 0.3s ease;
-			                                                                        &:hover {
-			                                                                            transform: scale(1.02);
-			                                                                        }" />
+												                                                                        max-height: 400px;
+												                                                                        object-fit: cover;
+												                                                                        cursor: pointer;
+												                                                                        transition: transform 0.3s ease;
+												                                                                        &:hover {
+												                                                                            transform: scale(1.02);
+												                                                                        }" />
 									}
 								</div>
 							}
@@ -83,12 +118,12 @@
 							{
 								<MudPaper Elevation="0"
 										  Style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-		                                                            border-radius: 16px;
-		                                                            height: 150px;
-		                                                            display: flex;
-		                                                            align-items: center;
-		                                                            justify-content: center;
-		                                                            margin-top: 1rem;">
+								                                                            border-radius: 16px;
+								                                                            height: 150px;
+								                                                            display: flex;
+								                                                            align-items: center;
+								                                                            justify-content: center;
+								                                                            margin-top: 1rem;">
 									<MudStack AlignItems="AlignItems.Center" Gap="8px">
 										<MudIcon Icon="@Icons.Material.Filled.PhotoCamera"
 												 Size="Size.Large"
@@ -113,7 +148,8 @@
 								<MudItem xs="4">
 									<MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-weight: 600;">
 										<MudIcon Icon="@Icons.Material.Filled.Comment" Size="Size.Small" />
-										@(ReportComments.ContainsKey(report.Id) ? ReportComments[report.Id].Count : 0) Comentários
+										@(CommentAppService.Comments.TryGetValue(report.Id, out var comments)
+																			? comments.Count : 0) Comentários
 									</MudText>
 								</MudItem>
 								<MudItem xs="4">
@@ -187,7 +223,7 @@
 						</MudCardActions>
 
 						<!-- Seção de Comentários -->
-						@if (OpenCommentsForReports.Contains(report.Id))
+						@if (CommentAppService.IsOpen(report.Id))
 						{
 							<div class="comment-section" Style="padding: 1.5rem;">
 								<MudText Typo="Typo.subtitle2" Style="font-weight: 600; margin-bottom: 1rem; color: #333;">
@@ -195,10 +231,10 @@
 									Comentários
 								</MudText>
 
-								@if (ReportComments.ContainsKey(report.Id) && ReportComments[report.Id].Any())
+								@if (CommentAppService.Comments.TryGetValue(report.Id, out var comments) && comments.Any())
 								{
 									<MudStack Gap="1rem">
-										@foreach (var comment in ReportComments[report.Id])
+										@foreach (var comment in comments)
 										{
 											<MudPaper Elevation="1" Style="padding: 1rem; border-radius: 12px; background: white;">
 												<MudGrid Spacing="2" AlignItems="AlignItems.Center">
@@ -250,21 +286,20 @@
 								<!-- Novo Comentário -->
 								<MudPaper Elevation="1" Style="padding: 1rem; border-radius: 12px; margin-top: 1.5rem; background: white;">
 									<MudStack Gap="1rem">
-										<MudTextField @bind-Value="NewCommentText[report.Id]"
+										<MudTextField T="string"
+													  Value="CommentAppService.GetDraft(report.Id)"
+													  ValueChanged="@(v => CommentAppService.SetDraft(report.Id, v))"
 													  Placeholder="Escreva um comentário..."
 													  Lines="3"
 													  FullWidth="true"
 													  Immediate="true"
-													  Variant="Variant.Outlined"
-													  Adornment="Adornment.Start"
-													  AdornmentIcon="@Icons.Material.Filled.Edit"
-													  Style="border-radius: 12px;" />
+													  Variant="Variant.Outlined" />
 
 										<div style="display: flex; justify-content: flex-end; gap: 8px;">
 											<MudButton Variant="Variant.Outlined"
 													   Color="Color.Secondary"
 													   Size="Size.Small"
-													   OnClick="@(() => NewCommentText[report.Id] = string.Empty)">
+													   OnClick="@(() => CommentAppService.ClearDraft(report.Id))">
 												Limpar
 											</MudButton>
 											<MudButton Variant="Variant.Filled"
