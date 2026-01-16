@@ -4,6 +4,7 @@ using FalandoSobre.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FalandoSobre.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260103140952_AlterTableSharedReportTwo")]
+    partial class AlterTableSharedReportTwo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,7 +206,7 @@ namespace FalandoSobre.Web.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -212,8 +215,6 @@ namespace FalandoSobre.Web.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ReportId");
 
@@ -583,10 +584,6 @@ namespace FalandoSobre.Web.Migrations
 
             modelBuilder.Entity("FalandoSobre.Domain.Entities.SharedReport", b =>
                 {
-                    b.HasOne("FalandoSobre.Web.Data.ApplicationUser", null)
-                        .WithMany("SharedReports")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("FalandoSobre.Domain.Entities.Report", "Report")
                         .WithMany()
                         .HasForeignKey("ReportId")
@@ -687,8 +684,6 @@ namespace FalandoSobre.Web.Migrations
                     b.Navigation("Logs");
 
                     b.Navigation("Reports");
-
-                    b.Navigation("SharedReports");
 
                     b.Navigation("UserInfos");
                 });

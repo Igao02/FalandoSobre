@@ -1,27 +1,27 @@
 ﻿using FalandoSobre.DomainCore.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace FalandoSobre.Domain.Entities;
 
-public class Like : Entity
+public class SharedReport : Entity
 {
-    public Like()
+    public SharedReport()
     {
         //ORM Purpose
     }
-
-    public DateTime? LikeDate { get; set; } = DateTime.Now;
 
     public virtual Guid ReportId { get; set; }
 
     public virtual Report? Report { get; set; }
 
-    public bool Actived { get; set; } = true;
-
     public string? ApplicationUserId { get; set; }
 
-    public Like(DateTime? likeDate, Guid reportId, string? applicationUserId) : base()
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public bool Actived { get; set; } = true;
+
+    public SharedReport(Guid reportId, string applicationUserId) : base()
     {
-        LikeDate = likeDate;
         ReportId = reportId;
         ApplicationUserId = applicationUserId;
     }

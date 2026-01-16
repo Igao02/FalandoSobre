@@ -74,6 +74,7 @@ builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>();
 builder.Services.AddTransient<IUserInfoRepository, UserInfoRepository>();
 builder.Services.AddTransient<ILikeRepository, LikeRepository>();
 builder.Services.AddTransient<ICommentRepository, CommentRepository>();
+builder.Services.AddTransient<ISharedReportRepository, SharedReportRepository>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, EmailSenderService>();
 
 // Configuração de Swagger e API

@@ -19,4 +19,6 @@ public class ApplicationUser : IdentityUser
     public List<Image> Images { get; set; } = new List<Image>();
 
     public List<UserInfo> UserInfos { get; set; } = new List<UserInfo>();
+
+    public List<SharedReport> SharedReports { get; set; } = new List<SharedReport>();
 }
