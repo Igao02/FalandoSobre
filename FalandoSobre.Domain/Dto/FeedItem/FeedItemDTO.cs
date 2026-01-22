@@ -12,6 +12,7 @@ public class FeedItemDTO
     // Dados do compartilhamento
     public string? SharedByUserId { get; set; }
     public string? SharedByUserName { get; set; }
+    public string? SharedByUserPhoto { get; set; }
 
     // Conteúdo principal
     public Report Report { get; set; } = null!;

@@ -37,7 +37,7 @@ public class HomePage : ComponentBase
 
 
     protected string? CurrentUserId { get; set; }
-    private int CurrentPage { get; set; } = 1;
+    protected int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
@@ -361,6 +361,22 @@ public class HomePage : ComponentBase
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    // Adicione este método na sua classe HomePage
+    protected int GetShareCount(Guid reportId)
+    {
+        // Implemente a lógica para contar quantas vezes o relatório foi compartilhado
+        // Exemplo: return Feed.Count(x => x.Report.Id == reportId && x.IsShared);
+        return 0; // Substitua pela implementação real
+    }
+
+    // Método para remover compartilhamento
+    protected async Task RemoveSharedReportAsync(Guid sharedReportId)
+    {
+        // Implemente a lógica para remover o compartilhamento
+        // await _sharedReportService.RemoveSharedReportAsync(sharedReportId);
+        // RefreshFeed(); // Atualize o feed após remover
     }
 
 }
