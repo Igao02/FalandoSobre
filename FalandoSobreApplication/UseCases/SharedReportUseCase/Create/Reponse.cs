@@ -7,4 +7,5 @@ public sealed class SharedReportResponse
     public string? ApplicationUserId { get; init; }
     public bool Actived { get; init; }
     public DateTime CreatedAt { get; init; }
+    public string? UserName { get; init; }
 }

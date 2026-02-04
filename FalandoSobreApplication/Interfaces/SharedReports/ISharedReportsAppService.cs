@@ -4,5 +4,5 @@ namespace FalandoSobreApplication.Interfaces.SharedReports;
 
 public interface ISharedReportsAppService
 {
-    Task<SharedReport> AddAsync(Guid reportId);
+    Task<SharedReport> AddAsync(Guid reportId, string userName);
 }

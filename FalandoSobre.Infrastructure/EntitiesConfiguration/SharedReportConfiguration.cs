@@ -21,5 +21,9 @@ public class SharedReportConfiguration : IEntityTypeConfiguration<SharedReport>
         builder
             .Property(sr => sr.CreatedAt)
             .IsRequired();
+
+        builder
+            .Property(sr => sr.UserName)
+            .IsRequired();
     }
 }

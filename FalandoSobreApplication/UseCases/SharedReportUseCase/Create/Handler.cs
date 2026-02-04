@@ -35,7 +35,8 @@ public sealed class CreateSharedReportHandler : ICommandHandler<CreateSharedRepo
                 Actived = true,
                 ApplicationUserId = request.ApplicationUserId,
                 CreatedAt = DateTime.UtcNow,
-                ReportId = request.ReportId
+                ReportId = request.ReportId,
+                UserName = request.UserName
             };
 
             var createdSharedReport = await _sharedReportRepository.Create(sharedReport);
@@ -46,7 +47,8 @@ public sealed class CreateSharedReportHandler : ICommandHandler<CreateSharedRepo
                 ReportId = createdSharedReport.ReportId,
                 ApplicationUserId = createdSharedReport.ApplicationUserId,
                 CreatedAt = createdSharedReport.CreatedAt,
-                Actived = createdSharedReport.Actived
+                Actived = createdSharedReport.Actived,
+                UserName = createdSharedReport.UserName
             };
 
             var log = new Logs

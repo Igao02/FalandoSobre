@@ -8,7 +8,6 @@ using FalandoSobreApplication.Interfaces.Feed;
 using FalandoSobreApplication.Interfaces.Likes;
 using FalandoSobreApplication.Interfaces.Reports;
 using FalandoSobreApplication.Interfaces.SharedReports;
-using FalandoSobreApplication.Services.Feed;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -43,6 +42,8 @@ public class HomePage : ComponentBase
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
 
     public bool isLoading = false;
+    protected string? UserName;
+    protected string? UserId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +71,8 @@ public class HomePage : ComponentBase
     {
         isLoading = true;
 
+        Console.WriteLine("Iniciando LoadDataAsync...");
+
         try
         {
             //(Model, TotalItems) = await ReportAppService.GetReportsAsync(CurrentPage, PageSize);
@@ -82,12 +85,16 @@ public class HomePage : ComponentBase
             Feed = feedResponse.Data;
             TotalItems = feedResponse.TotalItems;
 
-            // extrai apenas os Reports para reaproveitar toda a tela
+            Console.WriteLine("Cheguei até aqui???");
+
             Model = Feed
             .Select(f => f.Report)
             .GroupBy(r => r.Id)
             .Select(g => g.First())
             .ToList();
+
+            Console.WriteLine("Cheguei até aqui 2???");
+
 
             ModelUserInfo = await ReportAppService.GetProfilePhotosAsync(Model);
             await LoadUserLikesAsync();
@@ -349,8 +356,15 @@ public class HomePage : ComponentBase
         isLoading = true;
         try
         {
-            await SharedReportsAppService.AddAsync(reportId);
-            Snackbar.Add("Publicação compartilhada com sucesso!", Severity.Success);
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                UserName = user.Identity.Name;
+                UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                await SharedReportsAppService.AddAsync(reportId, UserName!);
+                Snackbar.Add("Publicação compartilhada com sucesso!", Severity.Success);
+            }
         }
         catch
         {

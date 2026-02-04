@@ -20,9 +20,12 @@ public class SharedReport : Entity
 
     public bool Actived { get; set; } = true;
 
-    public SharedReport(Guid reportId, string applicationUserId) : base()
+    public string UserName { get; set; } = string.Empty;
+
+    public SharedReport(Guid reportId, string applicationUserId, string userName) : base()
     {
         ReportId = reportId;
         ApplicationUserId = applicationUserId;
+        UserName = userName;
     }
 }

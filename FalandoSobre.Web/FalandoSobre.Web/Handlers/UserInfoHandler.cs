@@ -1,8 +1,8 @@
 ﻿using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
-using FalandoSobreApplication.UseCases.ReportUseCase.ListUseCase;
 using FalandoSobreApplication.UseCases.UserInfoUseCase.Create;
 using FalandoSobreApplication.UseCases.UserInfoUseCase.GetByUseId;
+using FalandoSobreApplication.UseCases.UserInfoUseCase.List;
 
 namespace FalandoSobre.Web.Handlers;
 
@@ -39,9 +39,33 @@ public class UserInfoHandler(IHttpClientFactory httpClientFactory, ILogger<UserI
         }
     }
 
-    public Task<IEnumerable<UserInfo?>> GetAllAsync()
+    public async Task<IEnumerable<UserInfo?>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.GetAsync("/list-user-info");
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            logger.LogError("Erro ao buscar informações adicionais dos usuários: {Error}", error);
+            throw new ApplicationException($"Erro ao buscar informações adicionais dos usuários: {error}");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<List<ListUserInfoResponse>>();
+
+        if (result is null)
+        {
+            logger.LogInformation("Nenhuma informação adicional encontrada para os usuários.");
+            return Enumerable.Empty<UserInfo?>();
+        }
+
+        return result.Select(userInfoResponse => new UserInfo
+        {
+            Id = userInfoResponse.Id,
+            ProfilePhoto = userInfoResponse.ProfilePhoto!,
+            ApplicationUserId = userInfoResponse.ApplicationUserId!,
+            Actived = userInfoResponse.Actived,
+            CreatedAt = userInfoResponse.CreatedAt
+        });
     }
 
     public async Task<UserInfo?> GetImageByUserId(string userId)

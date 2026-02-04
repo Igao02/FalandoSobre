@@ -4,6 +4,7 @@ using FalandoSobre.Domain.Dto.PagedResponse;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobreApplication.Interfaces.Feed;
+using System.Text.Json;
 
 namespace FalandoSobreApplication.Services.Feed;
 
@@ -31,31 +32,20 @@ public class FeedAppService : IFeedAppService
 
     public async Task<PagedResponse<List<FeedItemDTO>>> GetFeedAsync(PagedRequest request)
     {
-        // 1️⃣ Busca tudo (sem paginação)
+        // ===============================
+        // 1️⃣ Busca dados base
+        // ===============================
         var reports = await _reportRepository.GetAllAsync();
         var sharedReports = await _sharedReportRepository.GetListAsync();
 
-        // 2️⃣ Dicionário de reports (lookup rápido)
+        // Lookup rápido de reports
         var reportById = reports.ToDictionary(r => r.Id, r => r);
 
-        // 🔹 IDs de usuários que aparecem no feed
-        var userIds = reports
-            .Select(r => r.ApplicationUserId)
-            .Concat(sharedReports.Select(s => s.ApplicationUserId))
-            .Where(id => !string.IsNullOrEmpty(id))
-            .Distinct()
-            .ToList();
+        // ===============================
+        // 2️⃣ Monta FEED SEM resolver usuário
+        // ===============================
 
-        // 🔹 Busca infos dos usuários
-        var usersInfo = await _userInfoRepository.GetAllAsync();
-
-        // 🔹 Lookup rápido por ApplicationUserId
-        var userInfoByUserId = usersInfo
-            .Where(u => u != null && userIds.Contains(u.ApplicationUserId))
-            .ToDictionary(u => u!.ApplicationUserId, u => u!);
-
-
-        // 3️⃣ Reports normais
+        // Posts normais
         var reportFeedItems = reports.Select(r => new FeedItemDTO
         {
             EventId = r.Id,
@@ -66,32 +56,30 @@ public class FeedAppService : IFeedAppService
             Report = r
         });
 
-        // 4️⃣ Shared reports (reconstrói o Report)
+        // Posts compartilhados
         var sharedFeedItems = sharedReports
-        .Where(s => s.ReportId != null && reportById.ContainsKey(s.ReportId))
-        .Select(s =>
-        {
-            userInfoByUserId.TryGetValue(s.ApplicationUserId, out var userInfo);
-
-            return new FeedItemDTO
+            .Where(s => s.ReportId != null && reportById.ContainsKey(s.ReportId))
+            .Select(s => new FeedItemDTO
             {
                 EventId = s.Id,
                 EventDate = s.CreatedAt,
                 IsShared = true,
                 SharedByUserId = s.ApplicationUserId,
-                SharedByUserName = null,
-                SharedByUserPhoto = userInfo?.ProfilePhoto, 
+                SharedByUserName = s.UserName,
                 Report = reportById[s.ReportId!]
-            };
-        });
+            });
 
-        // 5️⃣ Feed unificado
+        // ===============================
+        // 3️⃣ Feed unificado + ordenado
+        // ===============================
         var feed = reportFeedItems
             .Concat(sharedFeedItems)
             .OrderByDescending(f => f.EventDate)
             .ToList();
 
-        // 6️⃣ Paginação FINAL
+        // ===============================
+        // 4️⃣ Paginação
+        // ===============================
         var totalItems = feed.Count;
 
         var pagedFeed = feed
@@ -99,7 +87,34 @@ public class FeedAppService : IFeedAppService
             .Take(request.PageSize)
             .ToList();
 
-        // 7️⃣ Carrega imagens (somente da página)
+        // ===============================
+        // 5️⃣ Resolve USUÁRIOS DA PÁGINA
+        // ===============================
+        var pageUserIds = pagedFeed
+            .Select(f => f.SharedByUserId)
+            .Where(id => !string.IsNullOrEmpty(id))
+            .Distinct()
+            .ToList();
+
+        var usersInfo = await _userInfoRepository.GetAllAsync();
+
+        var userInfoByUserId = usersInfo
+            .Where(u => u != null && pageUserIds.Contains(u.ApplicationUserId))
+            .ToDictionary(u => u!.ApplicationUserId, u => u!);
+
+        // Preenche nome + foto
+        foreach (var item in pagedFeed)
+        {
+            if (item.SharedByUserId != null &&
+                userInfoByUserId.TryGetValue(item.SharedByUserId, out var userInfo))
+            {
+                item.SharedByUserPhoto = userInfo.ProfilePhoto;
+            }
+        }
+
+        // ===============================
+        // 6️⃣ Carrega imagens dos reports
+        // ===============================
         foreach (var item in pagedFeed)
         {
             var images = await _imageRepository.GetImageByReportId(item.Report.Id);
@@ -113,6 +128,9 @@ public class FeedAppService : IFeedAppService
                 .ToList();
         }
 
+        // ===============================
+        // 7️⃣ Retorno final
+        // ===============================
         return new PagedResponse<List<FeedItemDTO>>(
             pagedFeed,
             totalItems,
@@ -120,4 +138,5 @@ public class FeedAppService : IFeedAppService
             request.PageSize
         );
     }
+
 }

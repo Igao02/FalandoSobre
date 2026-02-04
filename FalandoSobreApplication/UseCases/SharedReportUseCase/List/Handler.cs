@@ -25,7 +25,8 @@ public sealed class ListSharedReportHandler(
                     ReportId = sharedReport.ReportId,
                     ApplicationUserId = sharedReport.ApplicationUserId,
                     Actived = sharedReport.Actived,
-                    CreatedAt = sharedReport.CreatedAt
+                    CreatedAt = sharedReport.CreatedAt,
+                    UserName = sharedReport.UserName
                 })
                 .ToList();
 

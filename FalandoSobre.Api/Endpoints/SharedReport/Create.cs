@@ -9,7 +9,7 @@ namespace FalandoSobre.Api.Endpoints.SharedReport;
 
 public sealed class CreateSharedReportEndpoint : IEndpoint
 {
-    public sealed record Request(Guid ReportId, string ApplicationUserId);
+    public sealed record Request(Guid ReportId, string ApplicationUserId, string UserName);
 
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
@@ -17,7 +17,8 @@ public sealed class CreateSharedReportEndpoint : IEndpoint
         {
             var command = new CreateSharedReportCommand(
                 request.ReportId,
-                request.ApplicationUserId
+                request.ApplicationUserId,
+                request.UserName
             );
             Result<SharedReportResponse> result = await sender.Send(command, cancellationToken);
             return result.Match(

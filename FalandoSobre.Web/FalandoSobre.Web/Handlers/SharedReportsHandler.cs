@@ -17,7 +17,8 @@ public class SharedReportsHandler(IHttpClientFactory httpClientFactory, ILogger<
             sharedReport.ReportId,
             sharedReport.ApplicationUserId,
             sharedReport.Actived,
-            sharedReport.CreatedAt
+            sharedReport.CreatedAt,
+            sharedReport.UserName,
         });
 
         if(response.IsSuccessStatusCode)
@@ -34,7 +35,8 @@ public class SharedReportsHandler(IHttpClientFactory httpClientFactory, ILogger<
                 ReportId = createdReponse.ReportId,
                 ApplicationUserId = createdReponse.ApplicationUserId,
                 Actived = createdReponse.Actived,
-                CreatedAt = createdReponse.CreatedAt
+                CreatedAt = createdReponse.CreatedAt,
+                UserName = createdReponse.UserName!,
             };
             logger.LogInformation("Relatório compartilhado criado com sucesso!");
             return createdSharedReport;
@@ -67,7 +69,8 @@ public class SharedReportsHandler(IHttpClientFactory httpClientFactory, ILogger<
             ReportId = sr.ReportId,
             ApplicationUserId = sr.ApplicationUserId,
             Actived = sr.Actived,
-            CreatedAt = sr.CreatedAt
+            CreatedAt = sr.CreatedAt,
+            UserName = sr.UserName!,
         });
     }
 }

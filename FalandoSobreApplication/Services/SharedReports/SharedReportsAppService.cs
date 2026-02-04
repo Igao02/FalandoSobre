@@ -17,7 +17,7 @@ public class SharedReportsAppService : ISharedReportsAppService
         _auth = auth;
     }
 
-    public async Task<SharedReport> AddAsync(Guid reportId)
+    public async Task<SharedReport> AddAsync(Guid reportId, string userName)
     {
         var authState = await _auth.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -30,7 +30,8 @@ public class SharedReportsAppService : ISharedReportsAppService
             Actived = true,
             ApplicationUserId = userId,
             CreatedAt = DateTime.UtcNow,
-            ReportId = reportId
+            ReportId = reportId,
+            UserName = userName,
         };
 
         var created = await _sharedReportRepository.Create(sharedReport);
