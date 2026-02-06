@@ -376,21 +376,4 @@ public class HomePage : ComponentBase
             StateHasChanged();
         }
     }
-
-    // Adicione este método na sua classe HomePage
-    protected int GetShareCount(Guid reportId)
-    {
-        // Implemente a lógica para contar quantas vezes o relatório foi compartilhado
-        // Exemplo: return Feed.Count(x => x.Report.Id == reportId && x.IsShared);
-        return 0; // Substitua pela implementação real
-    }
-
-    // Método para remover compartilhamento
-    protected async Task RemoveSharedReportAsync(Guid sharedReportId)
-    {
-        // Implemente a lógica para remover o compartilhamento
-        // await _sharedReportService.RemoveSharedReportAsync(sharedReportId);
-        // RefreshFeed(); // Atualize o feed após remover
-    }
-
 }

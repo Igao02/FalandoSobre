@@ -21,18 +21,6 @@
                         <!-- DESIGN ALTERNATIVO PARA PUBLICAÇÕES COMPARTILHADAS -->
                         <MudPaper Elevation="8" Class="card-hover"
                                   Style="border-radius: 24px; background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%); border-left: 5px solid #5D5FEF; position: relative;">
-                            <!-- Indicador de Compartilhamento -->
-                            <div style="position: absolute; top: 12px; right: 12px;">
-                                <MudChip T="string"
-                                         Color="Color.Primary"
-                                         Variant="Variant.Filled"
-                                         Size="Size.Small"
-                                         Style="background: #5D5FEF; color: white; font-size: 0.7rem;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Share" Size="Size.Small" Class="mr-1" />
-                                    Compartilhado
-                                </MudChip>
-                            </div>
-
                             <!-- Cabeçalho com Informação de Compartilhamento -->
                             <div style="padding: 1.5rem 1.5rem 0.75rem 1.5rem; background: linear-gradient(90deg, rgba(93, 95, 239, 0.08) 0%, rgba(255, 255, 255, 0) 100%);">
                                 <MudStack Gap="0.5rem">
@@ -168,12 +156,6 @@
                                                                                         ? comments.Count : 0) Comentários
                                             </MudText>
                                         </MudItem>
-                                        <MudItem xs="4">
-                                            <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-weight: 600;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Share" Size="Size.Small" />
-                                                @GetShareCount(item.Report.Id) Compartilhamentos
-                                            </MudText>
-                                        </MudItem>
                                     </MudGrid>
                                 </div>
                             </MudPaper>
@@ -187,7 +169,6 @@
                                            Size="Size.Small"
                                            OnClick="@(() => ToggleLikeAsync(item.Report.Id))"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;">
-                                    @(HasUserLiked(item.Report.Id) ? "Curtido" : "Curtir")
                                 </MudButton>
 
                                 <MudButton Variant="Variant.Text"
@@ -196,7 +177,6 @@
                                            Size="Size.Small"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                            OnClick="@(() => ToggleComments(item.Report.Id))">
-                                    Comentar
                                 </MudButton>
 
                                 <MudButton Variant="Variant.Text"
@@ -205,7 +185,6 @@
                                            Size="Size.Small"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                            OnClick="@(() => CreateSharedReports(item.Report.Id))">
-                                    Compartilhar
                                 </MudButton>
 
                                 <div style="flex-grow: 1;"></div>
@@ -218,7 +197,6 @@
                                                Size="Size.Small"
                                                Style="border-radius: 8px; text-transform: none; font-weight: 500; margin-right: 4px;"
                                                OnClick="@(() => OpenEditReportDialogAsync(item.Report))">
-                                        Editar
                                     </MudButton>
 
                                     <MudButton Variant="Variant.Text"
@@ -227,29 +205,8 @@
                                                Size="Size.Small"
                                                Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                                OnClick="@(() => DeleteReportAsync(item.Report.Id))">
-                                        Excluir
                                     </MudButton>
-                                }
-
-                                @if (item.SharedByUserId == CurrentUserId)
-                                {
-                                    <MudButton Variant="Variant.Text"
-                                               Color="Color.Error"
-                                               StartIcon="@Icons.Material.Filled.Delete"
-                                               Size="Size.Small"
-                                               Style="border-radius: 8px; text-transform: none; font-weight: 500;"
-                                               OnClick="@(() => RemoveSharedReportAsync(item.EventId))">
-                                        Remover Compartilhamento
-                                    </MudButton>
-                                }
-
-                                <MudButton Variant="Variant.Text"
-                                           Color="Color.Default"
-                                           StartIcon="@Icons.Material.Filled.Bookmark"
-                                           Size="Size.Small"
-                                           Style="border-radius: 8px; text-transform: none;">
-                                    Salvar
-                                </MudButton>
+                                } 
                             </MudCardActions>
 
                             <!-- Seção de Comentários -->
@@ -330,7 +287,6 @@
                                                            Color="Color.Secondary"
                                                            Size="Size.Small"
                                                            OnClick="@(() => CommentAppService.ClearDraft(item.Report.Id))">
-                                                    Limpar
                                                 </MudButton>
                                                 <MudButton Variant="Variant.Filled"
                                                            Color="Color.Primary"
@@ -338,7 +294,6 @@
                                                            Size="Size.Small"
                                                            OnClick="@(() => AddCommentAsync(item.Report.Id))"
                                                            Style="border-radius: 8px;">
-                                                    Enviar Comentário
                                                 </MudButton>
                                             </div>
                                         </MudStack>
@@ -473,12 +428,6 @@
                                                                                 ? comments.Count : 0) Comentários
                                         </MudText>
                                     </MudItem>
-                                    <MudItem xs="4">
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-weight: 600;">
-                                            <MudIcon Icon="@Icons.Material.Filled.Share" Size="Size.Small" />
-                                            @GetShareCount(item.Report.Id) Compartilhamentos
-                                        </MudText>
-                                    </MudItem>
                                 </MudGrid>
                             </div>
 
@@ -491,7 +440,6 @@
                                            Size="Size.Small"
                                            OnClick="@(() => ToggleLikeAsync(item.Report.Id))"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;">
-                                    @(HasUserLiked(item.Report.Id) ? "Curtido" : "Curtir")
                                 </MudButton>
 
                                 <MudButton Variant="Variant.Text"
@@ -500,7 +448,6 @@
                                            Size="Size.Small"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                            OnClick="@(() => ToggleComments(item.Report.Id))">
-                                    Comentar
                                 </MudButton>
 
                                 <MudButton Variant="Variant.Text"
@@ -509,7 +456,6 @@
                                            Size="Size.Small"
                                            Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                            OnClick="@(() => CreateSharedReports(item.Report.Id))">
-                                    Compartilhar
                                 </MudButton>
 
                                 <div style="flex-grow: 1;"></div>
@@ -522,7 +468,6 @@
                                                Size="Size.Small"
                                                Style="border-radius: 8px; text-transform: none; font-weight: 500; margin-right: 4px;"
                                                OnClick="@(() => OpenEditReportDialogAsync(item.Report))">
-                                        Editar
                                     </MudButton>
 
                                     <MudButton Variant="Variant.Text"
@@ -531,17 +476,8 @@
                                                Size="Size.Small"
                                                Style="border-radius: 8px; text-transform: none; font-weight: 500;"
                                                OnClick="@(() => DeleteReportAsync(item.Report.Id))">
-                                        Excluir
                                     </MudButton>
                                 }
-
-                                <MudButton Variant="Variant.Text"
-                                           Color="Color.Default"
-                                           StartIcon="@Icons.Material.Filled.Bookmark"
-                                           Size="Size.Small"
-                                           Style="border-radius: 8px; text-transform: none;">
-                                    Salvar
-                                </MudButton>
                             </MudCardActions>
 
                             <!-- Seção de Comentários -->
@@ -622,7 +558,6 @@
                                                            Color="Color.Secondary"
                                                            Size="Size.Small"
                                                            OnClick="@(() => CommentAppService.ClearDraft(item.Report.Id))">
-                                                    Limpar
                                                 </MudButton>
                                                 <MudButton Variant="Variant.Filled"
                                                            Color="Color.Primary"
@@ -630,7 +565,6 @@
                                                            Size="Size.Small"
                                                            OnClick="@(() => AddCommentAsync(item.Report.Id))"
                                                            Style="border-radius: 8px;">
-                                                    Enviar Comentário
                                                 </MudButton>
                                             </div>
                                         </MudStack>
