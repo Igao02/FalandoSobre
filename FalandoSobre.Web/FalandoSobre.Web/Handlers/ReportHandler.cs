@@ -3,9 +3,10 @@ using FalandoSobre.Domain.Dto.PagedRequest;
 using FalandoSobre.Domain.Dto.PagedResponse;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
-using FalandoSobreApplication.UseCases.ReportUseCase.ListUseCase;
 using FalandoSobreApplication.UseCases.ReportUseCase.Delete;
 using FalandoSobreApplication.UseCases.ReportUseCase.Edit;
+using FalandoSobreApplication.UseCases.ReportUseCase.ListFeed;
+using FalandoSobreApplication.UseCases.ReportUseCase.ListUseCase;
 using System.Text.Json;
 
 namespace FalandoSobre.Web.Handlers;
@@ -108,6 +109,40 @@ public class ReportHandler(IHttpClientFactory httpClientFactory, ILogger<ReportH
         logger.LogError("Erro ao editar publicação: {Error}", error);
         throw new ApplicationException($"Erro ao editar publicação: {error}");
     }
+
+    public async Task<List<Report>> GetAllAsync()
+    {
+        try
+        {
+            var response = await _httpClient
+                .GetFromJsonAsync<List<ListFeedResponse>>("/reports/all");
+
+            if (response == null || !response.Any())
+                return new List<Report>();
+
+            var reports = response.Select(r => new Report(
+                r.ReportName,
+                r.TypeReport,
+                r.ReportDescription,
+                r.ReportDate,
+                r.UserName,
+                r.IsEvent,
+                r.Actived,
+                r.ApplicationUserId
+            )
+            {
+                Id = r.Id
+            }).ToList();
+
+            return reports;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Erro ao buscar todos os reports (feed).");
+            throw new ApplicationException("Erro ao buscar publicações do feed.", ex);
+        }
+    }
+
 
     public Task<Report?> GetAsync(Guid id)
     {

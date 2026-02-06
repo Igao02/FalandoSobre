@@ -157,12 +157,12 @@ dotnet run
 ## Arquitetura de Desenvolvimento (SIMPLIFICADA - Dezembro 2024):
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Front-end     │    │    API REST    │    │   SQL Server    │
-│   (Local)       │◄──►│    (Local)     │◄──►│    (Docker)     │
+│   Front-end     │    │    API REST     │    │   SQL Server    │
+│   (Local)       │◄──►│    (Local)      │◄─► │    (Docker)     │
 │  localhost:7188 │    │ localhost:7249  │    │ localhost:14333 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
        │                       │                       │
-       └────── Acesso direto ───────────────────────┘
+       └────── Acesso direto --──────────────────────-─┘
           (Front-end também acessa banco diretamente)
 ```
 

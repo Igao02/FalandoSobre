@@ -1,9 +1,13 @@
+using FalandoSobre.Domain.Dto.FeedItem;
+using FalandoSobre.Domain.Dto.PagedRequest;
 using FalandoSobre.Domain.Entities;
 using FalandoSobre.Domain.Repositories;
 using FalandoSobre.Web.Components.Pages.Home.Dialogs.EditReport;
 using FalandoSobreApplication.Interfaces.Comments;
+using FalandoSobreApplication.Interfaces.Feed;
 using FalandoSobreApplication.Interfaces.Likes;
 using FalandoSobreApplication.Interfaces.Reports;
+using FalandoSobreApplication.Interfaces.SharedReports;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -17,6 +21,8 @@ public class HomePage : ComponentBase
     [Inject] public IReportAppService ReportAppService { get; set; } = null!;
     [Inject] public ILikeAppService LikeAppService { get; set; } = null!;
     [Inject] public ICommentAppService CommentAppService { get; set; } = null!;
+    [Inject] public ISharedReportsAppService SharedReportsAppService { get; set; } = null!;
+    [Inject] public IFeedAppService FeedAppService { get; set; } = null!;
     [Inject] public IReportRepository ReportRepository { get; set; } = null!;
     [Inject] public IDialogService DialogService { get; set; } = null!;
     [Inject] public ISnackbar Snackbar { get; set; } = default!;
@@ -26,14 +32,18 @@ public class HomePage : ComponentBase
     protected List<UserInfo> ModelUserInfo { get; set; } = new()!;
     protected HashSet<Guid> LikedReportIds { get; set; } = new()!;
     protected Dictionary<Guid, int> ReportLikeCounts { get; set; } = new()!;
+    protected List<FeedItemDTO> Feed { get; set; } = new();
+
 
     protected string? CurrentUserId { get; set; }
-    private int CurrentPage { get; set; } = 1;
+    protected int CurrentPage { get; set; } = 1;
     private int PageSize { get; set; } = 5;
     private int TotalItems { get; set; }
     protected int TotalPages => (int)Math.Ceiling((double)TotalItems / (PageSize > 0 ? PageSize : 1));
-    
+
     public bool isLoading = false;
+    protected string? UserName;
+    protected string? UserId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,9 +71,31 @@ public class HomePage : ComponentBase
     {
         isLoading = true;
 
+        Console.WriteLine("Iniciando LoadDataAsync...");
+
         try
         {
-            (Model, TotalItems) = await ReportAppService.GetReportsAsync(CurrentPage, PageSize);
+            //(Model, TotalItems) = await ReportAppService.GetReportsAsync(CurrentPage, PageSize);
+            var feedResponse = await FeedAppService.GetFeedAsync(new PagedRequest
+            {
+                Page = CurrentPage,
+                PageSize = PageSize
+            });
+
+            Feed = feedResponse.Data;
+            TotalItems = feedResponse.TotalItems;
+
+            Console.WriteLine("Cheguei até aqui???");
+
+            Model = Feed
+            .Select(f => f.Report)
+            .GroupBy(r => r.Id)
+            .Select(g => g.First())
+            .ToList();
+
+            Console.WriteLine("Cheguei até aqui 2???");
+
+
             ModelUserInfo = await ReportAppService.GetProfilePhotosAsync(Model);
             await LoadUserLikesAsync();
             await LoadLikeCountsAsync();
@@ -319,4 +351,29 @@ public class HomePage : ComponentBase
         }
     }
 
+    protected async Task CreateSharedReports(Guid reportId)
+    {
+        isLoading = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                UserName = user.Identity.Name;
+                UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                await SharedReportsAppService.AddAsync(reportId, UserName!);
+                Snackbar.Add("Publicação compartilhada com sucesso!", Severity.Success);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao compartilhar publicação.", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 }

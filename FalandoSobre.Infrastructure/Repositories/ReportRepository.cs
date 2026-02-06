@@ -97,4 +97,8 @@ public class ReportRepository : IReportRepository
         return report;
     }
 
+    public Task<List<Report>> GetAllAsync() => _context.Reports
+        .Where(r => r.Actived)
+        .OrderByDescending(r => r.ReportsDate)
+        .ToListAsync();
 }

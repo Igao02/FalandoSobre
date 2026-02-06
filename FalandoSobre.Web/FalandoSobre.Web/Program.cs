@@ -4,11 +4,15 @@ using FalandoSobre.Web.Components.Account;
 using FalandoSobre.Web.Data;
 using FalandoSobre.Web.Handlers;
 using FalandoSobreApplication.Interfaces.Comments;
+using FalandoSobreApplication.Interfaces.Feed;
 using FalandoSobreApplication.Interfaces.Likes;
 using FalandoSobreApplication.Interfaces.Reports;
+using FalandoSobreApplication.Interfaces.SharedReports;
 using FalandoSobreApplication.Services.Comments;
+using FalandoSobreApplication.Services.Feed;
 using FalandoSobreApplication.Services.Likes;
 using FalandoSobreApplication.Services.Reports;
+using FalandoSobreApplication.Services.SharedReports;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,9 +69,12 @@ builder.Services.AddTransient<IInstitutionRepository, InstitutionHandler>();
 builder.Services.AddTransient<IUserInfoRepository, UserInfoHandler>();
 builder.Services.AddTransient<ILikeRepository, LikeHandler>();
 builder.Services.AddTransient<ICommentRepository, CommentHandler>();
+builder.Services.AddTransient<ISharedReportRepository, SharedReportsHandler>();
 builder.Services.AddTransient<IReportAppService, ReportAppService>();
-builder.Services.AddTransient<ILikeAppService, LikeAppService>(); 
+builder.Services.AddScoped<ILikeAppService, LikeAppService>(); 
 builder.Services.AddScoped<ICommentAppService, CommentAppService>();
+builder.Services.AddScoped<ISharedReportsAppService, SharedReportsAppService>();
+builder.Services.AddScoped<IFeedAppService, FeedAppService>();
 
 
 builder.Services.AddAuthentication(options =>

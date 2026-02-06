@@ -13,7 +13,7 @@ public class Like : Entity
 
     public virtual Guid ReportId { get; set; }
 
-    public virtual Report Report { get; set; }
+    public virtual Report? Report { get; set; }
 
     public bool Actived { get; set; } = true;
 
